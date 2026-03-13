@@ -25,6 +25,7 @@
         android:textColor="@color/secundario"
         android:textSize="32sp"
         android:textStyle="bold"
+        android:fontFamily="@font/orangekid"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/ivLogoPrincipal" />
