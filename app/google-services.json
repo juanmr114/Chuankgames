@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "98584406042",
+    "project_id": "chuankgames",
+    "storage_bucket": "chuankgames.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:98584406042:android:aee1b799453d89a10809a3",
+        "android_client_info": {
+          "package_name": "com.example.chuankgames"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAYX6Sm7qn-E3Gt9ytE_paLMzy2-d0ZJzg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

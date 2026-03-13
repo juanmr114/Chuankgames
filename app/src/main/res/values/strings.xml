@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Chuankgames</string>
+    <string name="titulo_iniciar">Iniciar Sesion</string>
+    <string name="correo_elctronico">Correo Electronico</string>
+    <string name="contrasenya">Contraseña</string>
+    <string name="tx_registrate">¿No tienes cuenta? Registrate</string>
+    <string name="action_settings">Ajustes</string>
+    <string name="first_fragment_label">Primer Fragmento</string>
+    <string name="second_fragment_label">Segundo Fragmento</string>
+</resources>
