@@ -2,6 +2,4 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="principal">#212B39</color>
-    <color name="secundario">#FF5722</color>
-</resources>
+    <color name="principal">#212B39</color> <color name="secundario">#FF5722</color> <color name="logo_burgundy">#5C0B29</color> </resources>
