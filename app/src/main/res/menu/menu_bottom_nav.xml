@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_inicio"
+        android:icon="@android:drawable/ic_menu_compass"
+        android:title="Inicio" />
+
+    <item
+        android:id="@+id/nav_buscar"
+        android:icon="@android:drawable/ic_menu_search"
+        android:title="Buscar" />
+
+    <item
+        android:id="@+id/nav_añadir"
+        android:icon="@android:drawable/ic_input_add"
+        android:title="Añadir" />
+
+    <item
+        android:id="@+id/nav_carrito"
+        android:icon="@android:drawable/ic_menu_today"
+        android:title="Carrito" />
+
+</menu>
