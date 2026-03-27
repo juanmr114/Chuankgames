@@ -114,7 +114,8 @@ public class PaginaPrincipalActivity extends AppCompatActivity
         todosLosJuegos.add(new Videojuego("5", "Cyberpunk 2077",  "Acción",     "Aventura futurista en Night City",                  14.99, ""));
         todosLosJuegos.add(new Videojuego("6", "Stardew Valley",  "Simulación", "Cultiva tu granja y vive en el campo",              13.99, ""));
         todosLosJuegos.add(new Videojuego("7", "Elden Ring",      "Acción",     "RPG de acción desafiante en un mundo abierto",      39.99, ""));
-        todosLosJuegos.add(new Videojuego("8", "Among Us",        "Multijugador","Descubre quién es el impostor en la nave",          3.99,  ""));
+        todosLosJuegos.add(new Videojuego("8", "Among Us",        "Multijugador","Descubre quién es el impostor en la nave", 3.99,  ""));
+        todosLosJuegos.add(new Videojuego("9", "Sex with hitler",        "Historia","La historia de un pintor Austriaco", 5.99,  ""));
     }
 
     private void configurarRecyclers() {
