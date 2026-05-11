@@ -7,4 +7,5 @@
     <string name="action_settings">Ajustes</string>
     <string name="first_fragment_label">Primer Fragmento</string>
     <string name="second_fragment_label">Segundo Fragmento</string>
+    <string name="default_web_client_id" />
 </resources>
