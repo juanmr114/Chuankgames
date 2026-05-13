@@ -1,11 +1,13 @@
 package com.example.chuankgames;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -16,6 +18,11 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,22 +38,25 @@ public class PaginaPrincipalActivity extends AppCompatActivity
     private RecyclerView recyclerTodos, recyclerRecomendados;
     private VideojuegoAdapter adapterTodos, adapterRecomendados;
 
-    private List<Videojuego> todosLosJuegos = new ArrayList<>();
+    private final List<Videojuego> todosLosJuegos     = new ArrayList<>();
+    private final List<Videojuego> juegosRecomendados = new ArrayList<>();
 
-    // Género favorito del usuario (en el futuro vendrá de Firebase/SharedPreferences)
-    private String generoFavorito = "Acción";
+    private DatabaseReference dbRef;
+    private String generoFavorito = "Acción"; // En el futuro vendrá del perfil del usuario
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pagina_principal);
 
+        dbRef = FirebaseDatabase.getInstance().getReference("videojuegos");
+
         inicializarVistas();
         configurarToolbar();
         configurarDrawer();
         configurarBottomNav();
-        cargarDatosDePrueba();
         configurarRecyclers();
+        cargarJuegosDesdeFirebase();
     }
 
     private void inicializarVistas() {
@@ -71,7 +81,6 @@ public class PaginaPrincipalActivity extends AppCompatActivity
     private void configurarDrawer() {
         navigationView.setNavigationItemSelectedListener(this);
 
-        // Actualizar cabecera con datos del usuario de Firebase
         View headerView = navigationView.getHeaderView(0);
         TextView tvNombre = headerView.findViewById(R.id.navHeaderNombre);
         TextView tvEmail  = headerView.findViewById(R.id.navHeaderEmail);
@@ -93,7 +102,8 @@ public class PaginaPrincipalActivity extends AppCompatActivity
                 Toast.makeText(this, "Buscar (próximamente)", Toast.LENGTH_SHORT).show();
                 return true;
             } else if (id == R.id.nav_añadir) {
-                Toast.makeText(this, "Añadir juego (próximamente)", Toast.LENGTH_SHORT).show();
+                // Abrir pantalla de publicar juego
+                startActivity(new Intent(this, PublicarJuegoActivity.class));
                 return true;
             } else if (id == R.id.nav_carrito) {
                 Toast.makeText(this, "Carrito (próximamente)", Toast.LENGTH_SHORT).show();
@@ -105,21 +115,7 @@ public class PaginaPrincipalActivity extends AppCompatActivity
         bottomNav.setSelectedItemId(R.id.nav_inicio);
     }
 
-    private void cargarDatosDePrueba() {
-        // Datos de ejemplo — aquí conectarás con Firebase Realtime Database
-        todosLosJuegos.add(new Videojuego("1", "God of War",      "Acción",     "Épica aventura nórdica con Kratos y Atreus",       29.99, ""));
-        todosLosJuegos.add(new Videojuego("2", "The Witcher 3",   "RPG",        "Explora el mundo abierto de Geralt de Rivia",       9.99,  ""));
-        todosLosJuegos.add(new Videojuego("3", "Minecraft",       "Sandbox",    "Construye y sobrevive en un mundo de bloques",      19.99, ""));
-        todosLosJuegos.add(new Videojuego("4", "FIFA 25",         "Deportes",   "El simulador de fútbol más popular del mundo",      59.99, ""));
-        todosLosJuegos.add(new Videojuego("5", "Cyberpunk 2077",  "Acción",     "Aventura futurista en Night City",                  14.99, ""));
-        todosLosJuegos.add(new Videojuego("6", "Stardew Valley",  "Simulación", "Cultiva tu granja y vive en el campo",              13.99, ""));
-        todosLosJuegos.add(new Videojuego("7", "Elden Ring",      "Acción",     "RPG de acción desafiante en un mundo abierto",      39.99, ""));
-        todosLosJuegos.add(new Videojuego("8", "Among Us",        "Multijugador","Descubre quién es el impostor en la nave", 3.99,  ""));
-        todosLosJuegos.add(new Videojuego("9", "Sex with hitler",        "Historia","La historia de un pintor Austriaco", 5.99,  ""));
-    }
-
     private void configurarRecyclers() {
-        // Todos los juegos — 2 columnas
         adapterTodos = new VideojuegoAdapter(todosLosJuegos, juego ->
                 Toast.makeText(this, "Abriendo: " + juego.getNombre(), Toast.LENGTH_SHORT).show()
         );
@@ -127,12 +123,7 @@ public class PaginaPrincipalActivity extends AppCompatActivity
         recyclerTodos.setAdapter(adapterTodos);
         recyclerTodos.setNestedScrollingEnabled(false);
 
-        // Recomendados — filtrar por género favorito, 2 columnas
-        List<Videojuego> recomendados = todosLosJuegos.stream()
-                .filter(j -> j.getGenero().equalsIgnoreCase(generoFavorito))
-                .collect(Collectors.toList());
-
-        adapterRecomendados = new VideojuegoAdapter(recomendados, juego ->
+        adapterRecomendados = new VideojuegoAdapter(juegosRecomendados, juego ->
                 Toast.makeText(this, "Abriendo: " + juego.getNombre(), Toast.LENGTH_SHORT).show()
         );
         recyclerRecomendados.setLayoutManager(new GridLayoutManager(this, 2));
@@ -140,8 +131,41 @@ public class PaginaPrincipalActivity extends AppCompatActivity
         recyclerRecomendados.setNestedScrollingEnabled(false);
     }
 
+    private void cargarJuegosDesdeFirebase() {
+        // ValueEventListener actualiza la lista en tiempo real
+        dbRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                todosLosJuegos.clear();
+                juegosRecomendados.clear();
+
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    Videojuego juego = ds.getValue(Videojuego.class);
+                    if (juego != null) {
+                        juego.setId(ds.getKey());
+                        todosLosJuegos.add(juego);
+                        if (juego.getGenero() != null &&
+                                juego.getGenero().equalsIgnoreCase(generoFavorito)) {
+                            juegosRecomendados.add(juego);
+                        }
+                    }
+                }
+
+                adapterTodos.actualizarLista(todosLosJuegos);
+                adapterRecomendados.actualizarLista(juegosRecomendados);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(PaginaPrincipalActivity.this,
+                        "Error cargando juegos: " + error.getMessage(),
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.lateral_perfil) {
             Toast.makeText(this, "Mi perfil (próximamente)", Toast.LENGTH_SHORT).show();

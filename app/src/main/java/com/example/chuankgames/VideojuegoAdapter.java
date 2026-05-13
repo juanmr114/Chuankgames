@@ -9,17 +9,19 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+
 import java.util.List;
-import java.util.Locale;
 
 public class VideojuegoAdapter extends RecyclerView.Adapter<VideojuegoAdapter.ViewHolder> {
-
-    private List<Videojuego> lista;
-    private OnItemClickListener listener;
 
     public interface OnItemClickListener {
         void onItemClick(Videojuego videojuego);
     }
+
+    private final List<Videojuego> lista;
+    private final OnItemClickListener listener;
 
     public VideojuegoAdapter(List<Videojuego> lista, OnItemClickListener listener) {
         this.lista = lista;
@@ -37,23 +39,33 @@ public class VideojuegoAdapter extends RecyclerView.Adapter<VideojuegoAdapter.Vi
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Videojuego juego = lista.get(position);
+
         holder.tvNombre.setText(juego.getNombre());
         holder.tvGenero.setText(juego.getGenero());
         holder.tvDescripcion.setText(juego.getDescripcion());
-        holder.tvPrecio.setText(String.format(Locale.getDefault(), "%.2f€", juego.getPrecio()));
+        holder.tvPrecio.setText(String.format("%.2f€", juego.getPrecio()));
 
-        holder.itemView.setOnClickListener(v -> {
-            if (listener != null) listener.onItemClick(juego);
-        });
+        // Cargar imagen desde Firebase Storage con Glide
+        if (juego.getImagenUrl() != null && !juego.getImagenUrl().isEmpty()) {
+            Glide.with(holder.imgJuego.getContext())
+                    .load(juego.getImagenUrl())
+                    .transition(DrawableTransitionOptions.withCrossFade())
+                    .placeholder(R.mipmap.ic_launcher)
+                    .error(R.mipmap.ic_launcher)
+                    .into(holder.imgJuego);
+        } else {
+            holder.imgJuego.setImageResource(R.mipmap.ic_launcher);
+        }
+
+        holder.itemView.setOnClickListener(v -> listener.onItemClick(juego));
     }
 
     @Override
-    public int getItemCount() {
-        return lista != null ? lista.size() : 0;
-    }
+    public int getItemCount() { return lista.size(); }
 
     public void actualizarLista(List<Videojuego> nuevaLista) {
-        this.lista = nuevaLista;
+        lista.clear();
+        lista.addAll(nuevaLista);
         notifyDataSetChanged();
     }
 

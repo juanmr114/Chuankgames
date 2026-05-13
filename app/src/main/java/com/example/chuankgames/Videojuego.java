@@ -7,10 +7,14 @@ public class Videojuego {
     private String descripcion;
     private double precio;
     private String imagenUrl;
+    private String publicadoPor; // UID del usuario que lo publicó
+    private long fechaPublicacion;
 
+    // Constructor vacío requerido por Firebase
     public Videojuego() {}
 
-    public Videojuego(String id, String nombre, String genero, String descripcion, double precio, String imagenUrl) {
+    public Videojuego(String id, String nombre, String genero, String descripcion,
+                      double precio, String imagenUrl) {
         this.id = id;
         this.nombre = nombre;
         this.genero = genero;
@@ -19,21 +23,27 @@ public class Videojuego {
         this.imagenUrl = imagenUrl;
     }
 
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
+    public String getId()               { return id; }
+    public void setId(String id)        { this.id = id; }
 
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
+    public String getNombre()                   { return nombre; }
+    public void setNombre(String nombre)        { this.nombre = nombre; }
 
-    public String getGenero() { return genero; }
-    public void setGenero(String genero) { this.genero = genero; }
+    public String getGenero()                   { return genero; }
+    public void setGenero(String genero)        { this.genero = genero; }
 
-    public String getDescripcion() { return descripcion; }
-    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
+    public String getDescripcion()                      { return descripcion; }
+    public void setDescripcion(String descripcion)      { this.descripcion = descripcion; }
 
-    public double getPrecio() { return precio; }
-    public void setPrecio(double precio) { this.precio = precio; }
+    public double getPrecio()                   { return precio; }
+    public void setPrecio(double precio)        { this.precio = precio; }
 
-    public String getImagenUrl() { return imagenUrl; }
-    public void setImagenUrl(String imagenUrl) { this.imagenUrl = imagenUrl; }
+    public String getImagenUrl()                        { return imagenUrl; }
+    public void setImagenUrl(String imagenUrl)          { this.imagenUrl = imagenUrl; }
+
+    public String getPublicadoPor()                         { return publicadoPor; }
+    public void setPublicadoPor(String publicadoPor)        { this.publicadoPor = publicadoPor; }
+
+    public long getFechaPublicacion()                           { return fechaPublicacion; }
+    public void setFechaPublicacion(long fechaPublicacion)      { this.fechaPublicacion = fechaPublicacion; }
 }

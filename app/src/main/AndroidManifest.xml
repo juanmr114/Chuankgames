@@ -32,6 +32,9 @@
             android:exported="false"
             android:theme="@style/Theme.Chuankgames" />
 
+        <activity android:name=".PublicarJuegoActivity" />
+
+
     </application>
 
 </manifest>
