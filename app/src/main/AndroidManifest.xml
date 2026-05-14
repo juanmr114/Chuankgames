@@ -32,6 +32,8 @@
             android:exported="false"
             android:theme="@style/Theme.Chuankgames" />
 
+        <activity android:name=".C" />
+        <activity android:name=".BibliotecaActivity" />
         <activity android:name=".PublicarJuegoActivity" />
 
 

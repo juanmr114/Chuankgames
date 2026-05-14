@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/principal">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Imagen portada -->
+        <ImageView
+            android:id="@+id/ivDetallePortada"
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
+            android:scaleType="centerCrop"
+            android:background="#1E2A38" />
+
+        <!-- Saldo del usuario -->
+        <TextView
+            android:id="@+id/tvSaldoDetalle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="12dp"
+            android:textColor="@color/secundario"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:text="💰 Saldo: 0 monedas" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <!-- Nombre -->
+            <TextView
+                android:id="@+id/tvDetalleNombre"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/secundario"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/orangekid" />
+
+            <!-- Género -->
+            <TextView
+                android:id="@+id/tvDetalleGenero"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textColor="#AAAAAA"
+                android:textSize="13sp" />
+
+            <!-- Vendedor -->
+            <TextView
+                android:id="@+id/tvDetalleVendedor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textColor="#AAAAAA"
+                android:textSize="13sp" />
+
+            <!-- Descripción -->
+            <TextView
+                android:id="@+id/tvDetalleDescripcion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:lineSpacingMultiplier="1.4" />
+
+            <!-- Precio -->
+            <TextView
+                android:id="@+id/tvDetallePrecio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:textColor="@color/secundario"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/orangekid" />
+
+            <!-- Botón comprar -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnComprar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="🛒 Comprar"
+                android:textColor="@color/principal"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:backgroundTint="@color/secundario"
+                android:paddingVertical="14dp"
+                app:cornerRadius="12dp" />
+
+            <!-- Botón revender (solo visible si es tuyo) -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnRevender"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="🔄 Poner en venta"
+                android:textColor="@color/secundario"
+                android:textSize="15sp"
+                android:backgroundTint="@color/principal"
+                android:paddingVertical="12dp"
+                android:visibility="gone"
+                app:cornerRadius="12dp"
+                app:strokeColor="@color/secundario"
+                app:strokeWidth="1dp" />
+
+            <ProgressBar
+                android:id="@+id/progressDetalle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="12dp"
+                android:visibility="gone" />
+
+        </LinearLayout>
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

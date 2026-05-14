@@ -23,47 +23,45 @@
             android:fontFamily="@font/orangekid"
             android:layout_marginBottom="24dp" />
 
-        <!-- Imagen del juego -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Portada del juego"
-            android:textColor="@color/white"
-            android:textSize="14sp"
-            android:layout_marginBottom="8dp" />
-
-        <FrameLayout
+        <!-- Preview de imagen -->
+        <ImageView
+            android:id="@+id/ivPreviewPortada"
             android:layout_width="match_parent"
             android:layout_height="180dp"
-            android:layout_marginBottom="16dp">
+            android:scaleType="centerCrop"
+            android:background="#1E2A38"
+            android:layout_marginBottom="12dp" />
 
-            <ImageView
-                android:id="@+id/ivPortadaSeleccionada"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                android:background="#1E2A38" />
-
-            <TextView
-                android:id="@+id/tvSeleccionarFoto"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="📷 Toca para seleccionar imagen"
-                android:textColor="#AAAAAA"
-                android:textSize="14sp" />
-
-        </FrameLayout>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnSeleccionarImagen"
+        <!-- URL de imagen -->
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Seleccionar imagen"
+            android:hint="URL de la imagen (https://...)"
+            android:layout_marginBottom="8dp"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            app:boxStrokeColor="@color/secundario"
+            app:hintTextColor="@color/secundario">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etUrlImagen"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:inputType="textUri"
+                android:imeOptions="actionDone" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Botón previsualizar -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnPrevisualizar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="👁 Previsualizar"
             android:textColor="@color/principal"
             android:backgroundTint="@color/secundario"
             android:layout_marginBottom="20dp"
-            app:cornerRadius="10dp" />
+            app:cornerRadius="8dp" />
 
         <!-- Nombre -->
         <com.google.android.material.textfield.TextInputLayout
@@ -85,23 +83,22 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Género -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="Género (Acción, RPG, Deportes...)"
-            android:layout_marginBottom="12dp"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            app:boxStrokeColor="@color/secundario"
-            app:hintTextColor="@color/secundario">
+            android:text="Género"
+            android:textColor="@color/secundario"
+            android:textSize="13sp"
+            android:layout_marginBottom="4dp" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etGeneroJuego"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:inputType="textCapWords" />
-
-        </com.google.android.material.textfield.TextInputLayout>
+        <Spinner
+            android:id="@+id/spinnerGenero"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@drawable/spinner_bg"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:layout_marginBottom="16dp" />
 
         <!-- Descripción -->
         <com.google.android.material.textfield.TextInputLayout
@@ -128,7 +125,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Precio (€)"
+            android:hint="Precio (monedas)"
             android:layout_marginBottom="24dp"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             app:boxStrokeColor="@color/secundario"
@@ -156,7 +153,6 @@
             android:paddingVertical="14dp"
             app:cornerRadius="12dp" />
 
-        <!-- Progress -->
         <ProgressBar
             android:id="@+id/progressPublicar"
             android:layout_width="wrap_content"

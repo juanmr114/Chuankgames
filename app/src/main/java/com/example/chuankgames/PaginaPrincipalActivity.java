@@ -26,10 +26,11 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class PaginaPrincipalActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private static final String DB_URL = "https://chuankgames-default-rtdb.europe-west1.firebasedatabase.app";
 
     private DrawerLayout drawerLayout;
     private BottomNavigationView bottomNav;
@@ -41,15 +42,20 @@ public class PaginaPrincipalActivity extends AppCompatActivity
     private final List<Videojuego> todosLosJuegos     = new ArrayList<>();
     private final List<Videojuego> juegosRecomendados = new ArrayList<>();
 
-    private DatabaseReference dbRef;
-    private String generoFavorito = "Acción"; // En el futuro vendrá del perfil del usuario
+    private DatabaseReference dbJuegos, dbUsuarios;
+    private String uid;
+    private String generoFavorito = "Acción";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pagina_principal);
+        android.util.Log.d("PAGINA", "onCreate ejecutado");
 
-        dbRef = FirebaseDatabase.getInstance().getReference("videojuegos");
+        uid        = FirebaseAuth.getInstance().getCurrentUser() != null
+                ? FirebaseAuth.getInstance().getCurrentUser().getUid() : "";
+        dbJuegos   = FirebaseDatabase.getInstance().getReference("videojuegos");
+        dbUsuarios = FirebaseDatabase.getInstance().getReference("usuarios");
 
         inicializarVistas();
         configurarToolbar();
@@ -57,6 +63,7 @@ public class PaginaPrincipalActivity extends AppCompatActivity
         configurarBottomNav();
         configurarRecyclers();
         cargarJuegosDesdeFirebase();
+        asegurarSaldoInicial();
     }
 
     private void inicializarVistas() {
@@ -65,6 +72,20 @@ public class PaginaPrincipalActivity extends AppCompatActivity
         navigationView       = findViewById(R.id.navigationView);
         recyclerTodos        = findViewById(R.id.recyclerTodos);
         recyclerRecomendados = findViewById(R.id.recyclerRecomendados);
+    }
+
+    private void asegurarSaldoInicial() {
+        if (uid.isEmpty()) return;
+        dbUsuarios.child(uid).child("saldo").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!snapshot.exists()) {
+                    dbUsuarios.child(uid).child("saldo").setValue(500.0);
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {}
+        });
     }
 
     private void configurarToolbar() {
@@ -80,7 +101,6 @@ public class PaginaPrincipalActivity extends AppCompatActivity
 
     private void configurarDrawer() {
         navigationView.setNavigationItemSelectedListener(this);
-
         View headerView = navigationView.getHeaderView(0);
         TextView tvNombre = headerView.findViewById(R.id.navHeaderNombre);
         TextView tvEmail  = headerView.findViewById(R.id.navHeaderEmail);
@@ -102,38 +122,39 @@ public class PaginaPrincipalActivity extends AppCompatActivity
                 Toast.makeText(this, "Buscar (próximamente)", Toast.LENGTH_SHORT).show();
                 return true;
             } else if (id == R.id.nav_añadir) {
-                // Abrir pantalla de publicar juego
                 startActivity(new Intent(this, PublicarJuegoActivity.class));
                 return true;
             } else if (id == R.id.nav_carrito) {
-                Toast.makeText(this, "Carrito (próximamente)", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this, BibliotecaActivity.class));
                 return true;
             }
             return false;
         });
-
         bottomNav.setSelectedItemId(R.id.nav_inicio);
     }
 
     private void configurarRecyclers() {
-        adapterTodos = new VideojuegoAdapter(todosLosJuegos, juego ->
-                Toast.makeText(this, "Abriendo: " + juego.getNombre(), Toast.LENGTH_SHORT).show()
-        );
+        adapterTodos = new VideojuegoAdapter(todosLosJuegos, juego -> abrirDetalle(juego));
         recyclerTodos.setLayoutManager(new GridLayoutManager(this, 2));
         recyclerTodos.setAdapter(adapterTodos);
         recyclerTodos.setNestedScrollingEnabled(false);
+        recyclerTodos.setHasFixedSize(false);
 
-        adapterRecomendados = new VideojuegoAdapter(juegosRecomendados, juego ->
-                Toast.makeText(this, "Abriendo: " + juego.getNombre(), Toast.LENGTH_SHORT).show()
-        );
+        adapterRecomendados = new VideojuegoAdapter(juegosRecomendados, juego -> abrirDetalle(juego));
         recyclerRecomendados.setLayoutManager(new GridLayoutManager(this, 2));
         recyclerRecomendados.setAdapter(adapterRecomendados);
         recyclerRecomendados.setNestedScrollingEnabled(false);
+        recyclerRecomendados.setHasFixedSize(false);
+    }
+
+    private void abrirDetalle(Videojuego juego) {
+        Intent intent = new Intent(this, DetalleJuegoActivity.class);
+        intent.putExtra(DetalleJuegoActivity.EXTRA_JUEGO_ID, juego.getId());
+        startActivity(intent);
     }
 
     private void cargarJuegosDesdeFirebase() {
-        // ValueEventListener actualiza la lista en tiempo real
-        dbRef.addValueEventListener(new ValueEventListener() {
+        dbJuegos.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 todosLosJuegos.clear();
@@ -170,12 +191,11 @@ public class PaginaPrincipalActivity extends AppCompatActivity
         if (id == R.id.lateral_perfil) {
             Toast.makeText(this, "Mi perfil (próximamente)", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.lateral_compras) {
-            Toast.makeText(this, "Mis compras (próximamente)", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, BibliotecaActivity.class));
         } else if (id == R.id.lateral_ajustes) {
             Toast.makeText(this, "Ajustes (próximamente)", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.lateral_cerrar_sesion) {
             FirebaseAuth.getInstance().signOut();
-            Toast.makeText(this, "Sesión cerrada", Toast.LENGTH_SHORT).show();
             finish();
         }
         drawerLayout.closeDrawer(GravityCompat.START);

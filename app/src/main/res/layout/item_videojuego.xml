@@ -1,78 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
+<androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardBackgroundColor="@color/principal"
-    app:cardCornerRadius="10dp"
-    app:cardElevation="4dp"
-    app:strokeColor="@color/secundario"
-    app:strokeWidth="1dp">
+    android:layout_margin="6dp"
+    app:cardCornerRadius="12dp"
+    app:cardBackgroundColor="#1E2A38"
+    app:cardElevation="4dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="12dp">
+        android:orientation="vertical">
 
-        <!-- Imagen del juego -->
         <ImageView
             android:id="@+id/imgJuego"
             android:layout_width="match_parent"
-            android:layout_height="75dp"
-            android:src="@mipmap/ic_launcher"
-            android:scaleType="centerCrop" />
+            android:layout_height="130dp"
+            android:scaleType="centerCrop"
+            android:background="#2C3E50" />
 
-        <!-- Nombre -->
-        <TextView
-            android:id="@+id/tvNombreJuego"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Nombre del juego"
-            android:textStyle="bold"
-            android:textSize="14sp"
-            android:textColor="@color/white"
-            android:fontFamily="@font/orangekid"
-            android:layout_marginTop="8dp" />
+            android:orientation="vertical"
+            android:padding="8dp">
 
-        <!-- Género -->
-        <TextView
-            android:id="@+id/tvGeneroJuego"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Género"
-            android:textSize="12sp"
-            android:textColor="@color/secundario"
-            android:fontFamily="@font/orangekid"
-            android:layout_marginTop="2dp" />
+            <TextView
+                android:id="@+id/tvNombreJuego"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#FFD947"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:maxLines="1"
+                android:ellipsize="end" />
 
-        <!-- Descripción -->
-        <TextView
-            android:id="@+id/tvDescripcionJuego"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Descripción corta"
-            android:textSize="11sp"
-            android:textColor="#AAFFFFFF"
-            android:fontFamily="@font/orangekid"
-            android:maxLines="2"
-            android:ellipsize="end"
-            android:layout_marginTop="4dp" />
+            <TextView
+                android:id="@+id/tvGeneroJuego"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#AAAAAA"
+                android:textSize="11sp"
+                android:layout_marginTop="2dp" />
 
-        <!-- Precio -->
-        <TextView
-            android:id="@+id/tvPrecioJuego"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="9,99€"
-            android:textColor="@color/secundario"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:fontFamily="@font/orangekid"
-            android:layout_marginTop="6dp" />
+            <TextView
+                android:id="@+id/tvDescripcionJuego"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#CCCCCC"
+                android:textSize="11sp"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:layout_marginTop="2dp" />
 
+            <TextView
+                android:id="@+id/tvPrecioJuego"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#FFFFFF"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:layout_marginTop="4dp" />
+
+        </LinearLayout>
     </LinearLayout>
 
-</com.google.android.material.card.MaterialCardView>
+</androidx.cardview.widget.CardView>
