@@ -52,14 +52,37 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/ivLogoPrincipal" />
 
+        <!-- Barra de búsqueda -->
+        <EditText
+            android:id="@+id/etBuscarJuego"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/bg_search"
+            android:drawableStart="@android:drawable/ic_menu_search"
+            android:drawableTint="@color/secundario"
+            android:drawablePadding="8dp"
+            android:hint="Buscar videojuego..."
+            android:hintTextColor="#AAAAAA"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:paddingHorizontal="14dp"
+            android:inputType="text"
+            android:imeOptions="actionSearch"
+            android:singleLine="true"
+            app:layout_constraintTop_toBottomOf="@id/tvTituloPrincipal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
         <!-- Scroll con las dos secciones -->
         <androidx.core.widget.NestedScrollView
             android:id="@+id/scrollContenido"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             android:clipToPadding="false"
-            app:layout_constraintTop_toBottomOf="@id/tvTituloPrincipal"
+            app:layout_constraintTop_toBottomOf="@id/etBuscarJuego"
             app:layout_constraintBottom_toTopOf="@id/lineaSeparadora"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
