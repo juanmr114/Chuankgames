@@ -2,6 +2,7 @@ package com.example.chuankgames;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -54,8 +55,9 @@ public class PaginaPrincipalActivity extends AppCompatActivity
 
         uid        = FirebaseAuth.getInstance().getCurrentUser() != null
                 ? FirebaseAuth.getInstance().getCurrentUser().getUid() : "";
-        dbJuegos   = FirebaseDatabase.getInstance().getReference("videojuegos");
-        dbUsuarios = FirebaseDatabase.getInstance().getReference("usuarios");
+        // Busca donde inicializas dbJuegos y dbUsuarios y cámbialo por:
+        dbJuegos = FirebaseDatabase.getInstance(DB_URL).getReference("videojuegos");
+        dbUsuarios = FirebaseDatabase.getInstance(DB_URL).getReference("usuarios");
 
         inicializarVistas();
         configurarToolbar();
@@ -80,6 +82,7 @@ public class PaginaPrincipalActivity extends AppCompatActivity
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (!snapshot.exists()) {
+                    android.util.Log.d("FIREBASE_TEST", "Número de juegos recibidos: " + snapshot.getChildrenCount());
                     dbUsuarios.child(uid).child("saldo").setValue(500.0);
                 }
             }
@@ -157,34 +160,52 @@ public class PaginaPrincipalActivity extends AppCompatActivity
         dbJuegos.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                // Limpiamos las listas locales antes de llenarlas con los nuevos datos
                 todosLosJuegos.clear();
-                juegosRecomendados.clear();
+                juegosRecomendados.clear(); // Esta lista ahora contendrá "Tus Juegos"
 
                 for (DataSnapshot ds : snapshot.getChildren()) {
                     Videojuego juego = ds.getValue(Videojuego.class);
                     if (juego != null) {
-                        juego.setId(ds.getKey());
-                        todosLosJuegos.add(juego);
-                        if (juego.getGenero() != null &&
-                                juego.getGenero().equalsIgnoreCase(generoFavorito)) {
-                            juegosRecomendados.add(juego);
+                        juego.setId(ds.getKey()); // Guardamos el ID de Firebase en el objeto
+
+                        // FILTRADO: Si el juego fue publicado por el usuario actual (uid)
+                        if (juego.getPublicadoPor() != null && juego.getPublicadoPor().equals(uid)) {
+                            juegosRecomendados.add(juego); // Va a la sección personal
+                        } else {
+                            // Solo añadimos a "Todos" los juegos que NO son del usuario actual
+                            // y que están disponibles para la compra
+                            if (juego.isDisponible()) {
+                                todosLosJuegos.add(juego);
+                            }
                         }
                     }
                 }
 
-                adapterTodos.actualizarLista(todosLosJuegos);
-                adapterRecomendados.actualizarLista(juegosRecomendados);
+                // Actualización de la interfaz en el hilo de la vista
+                recyclerTodos.post(() -> {
+                    adapterTodos.actualizarLista(new ArrayList<>(todosLosJuegos));
+                    recyclerTodos.requestLayout();
+                });
+
+                recyclerRecomendados.post(() -> {
+                    // Ahora esta lista muestra los juegos creados por ti
+                    adapterRecomendados.actualizarLista(new ArrayList<>(juegosRecomendados));
+                    recyclerRecomendados.requestLayout();
+                });
+
+                android.util.Log.d("PAGINA", "Carga finalizada. Propios: " +
+                        juegosRecomendados.size() + " | Otros: " + todosLosJuegos.size());
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Toast.makeText(PaginaPrincipalActivity.this,
-                        "Error cargando juegos: " + error.getMessage(),
+                        "Error al sincronizar con la base de datos: " + error.getMessage(),
                         Toast.LENGTH_SHORT).show();
             }
         });
     }
-
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();

@@ -87,6 +87,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:nestedScrollingEnabled="false"
+                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                    app:spanCount="2"
                     android:paddingHorizontal="8dp" />
 
                 <!-- Separador entre secciones -->
@@ -103,7 +105,7 @@
                     android:id="@+id/tvTituloRecomendados"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="⭐ Recomendados para ti"
+                    android:text="👤 Tus videojuegos creados"
                     android:textColor="@color/secundario"
                     android:textSize="18sp"
                     android:textStyle="bold"

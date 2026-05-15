@@ -61,11 +61,18 @@ public class VideojuegoAdapter extends RecyclerView.Adapter<VideojuegoAdapter.Vi
     }
 
     @Override
-    public int getItemCount() { return lista.size(); }
+    public int getItemCount() {
+        return lista != null ? lista.size() : 0;
+    }
 
     public void actualizarLista(List<Videojuego> nuevaLista) {
-        lista.clear();
-        lista.addAll(nuevaLista);
+        // Si la lista interna y nuevaLista son el mismo objeto (misma referencia),
+        // NO hacemos .clear() porque borraríamos los datos que acaba de traer Firebase.
+        if (this.lista != nuevaLista) {
+            this.lista.clear();
+            this.lista.addAll(nuevaLista);
+        }
+        // Esto es lo que realmente hace que los juegos aparezcan en pantalla
         notifyDataSetChanged();
     }
 
