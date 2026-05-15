@@ -1,5 +1,6 @@
 package com.example.chuankgames;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -13,6 +14,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
@@ -58,8 +60,8 @@ public class PublicarJuegoActivity extends AppCompatActivity {
         progressBar      = findViewById(R.id.progressPublicar);
 
         configurarSpinner();
+        configurarBottomNav();
 
-        // Previsualizar imagen al pulsar el botón
         btnPrevisualizar.setOnClickListener(v -> {
             String url = etUrl.getText() != null ? etUrl.getText().toString().trim() : "";
             if (url.isEmpty()) {
@@ -75,6 +77,29 @@ public class PublicarJuegoActivity extends AppCompatActivity {
         });
 
         btnPublicar.setOnClickListener(v -> validarYPublicar());
+    }
+
+    private void configurarBottomNav() {
+        BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
+        bottomNav.setSelectedItemId(R.id.nav_añadir);
+        bottomNav.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.nav_inicio) {
+                Intent i = new Intent(this, PaginaPrincipalActivity.class);
+                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                startActivity(i);
+                return true;
+            } else if (id == R.id.nav_buscar) {
+                startActivity(new Intent(this, NoticiasActivity.class));
+                return true;
+            } else if (id == R.id.nav_añadir) {
+                return true;
+            } else if (id == R.id.nav_carrito) {
+                startActivity(new Intent(this, BibliotecaActivity.class));
+                return true;
+            }
+            return false;
+        });
     }
 
     private void configurarSpinner() {

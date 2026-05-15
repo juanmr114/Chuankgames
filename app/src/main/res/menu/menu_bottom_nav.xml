@@ -8,8 +8,8 @@
 
     <item
         android:id="@+id/nav_buscar"
-        android:icon="@android:drawable/ic_menu_search"
-        android:title="Buscar" />
+        android:icon="@android:drawable/ic_menu_info_details"
+        android:title="Noticias" />
 
     <item
         android:id="@+id/nav_añadir"

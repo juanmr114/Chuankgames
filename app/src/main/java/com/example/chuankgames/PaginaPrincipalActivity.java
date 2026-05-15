@@ -2,9 +2,12 @@ package com.example.chuankgames;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,7 +42,12 @@ public class PaginaPrincipalActivity extends AppCompatActivity
 
     private RecyclerView recyclerTodos, recyclerRecomendados;
     private VideojuegoAdapter adapterTodos, adapterRecomendados;
+    private EditText etBuscar;
 
+    // Listas completas (fuente de verdad desde Firebase)
+    private final List<Videojuego> todosCompleto    = new ArrayList<>();
+    private final List<Videojuego> propiosCompleto  = new ArrayList<>();
+    // Listas que muestran los adaptadores (pueden estar filtradas)
     private final List<Videojuego> todosLosJuegos     = new ArrayList<>();
     private final List<Videojuego> juegosRecomendados = new ArrayList<>();
 
@@ -64,6 +72,7 @@ public class PaginaPrincipalActivity extends AppCompatActivity
         configurarDrawer();
         configurarBottomNav();
         configurarRecyclers();
+        configurarBuscador();
         cargarJuegosDesdeFirebase();
         asegurarSaldoInicial();
     }
@@ -74,6 +83,7 @@ public class PaginaPrincipalActivity extends AppCompatActivity
         navigationView       = findViewById(R.id.navigationView);
         recyclerTodos        = findViewById(R.id.recyclerTodos);
         recyclerRecomendados = findViewById(R.id.recyclerRecomendados);
+        etBuscar             = findViewById(R.id.etBuscar);
     }
 
     private void asegurarSaldoInicial() {
@@ -122,7 +132,7 @@ public class PaginaPrincipalActivity extends AppCompatActivity
             if (id == R.id.nav_inicio) {
                 return true;
             } else if (id == R.id.nav_buscar) {
-                Toast.makeText(this, "Buscar (próximamente)", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this, NoticiasActivity.class));
                 return true;
             } else if (id == R.id.nav_añadir) {
                 startActivity(new Intent(this, PublicarJuegoActivity.class));
@@ -150,6 +160,40 @@ public class PaginaPrincipalActivity extends AppCompatActivity
         recyclerRecomendados.setHasFixedSize(false);
     }
 
+    private void configurarBuscador() {
+        etBuscar.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
+                filtrarJuegos(s.toString().trim().toLowerCase());
+            }
+            @Override public void afterTextChanged(Editable s) {}
+        });
+    }
+
+    private void filtrarJuegos(String query) {
+        if (query.isEmpty()) {
+            adapterTodos.actualizarLista(new ArrayList<>(todosCompleto));
+            adapterRecomendados.actualizarLista(new ArrayList<>(propiosCompleto));
+            return;
+        }
+        List<Videojuego> filtradosTodos = new ArrayList<>();
+        for (Videojuego j : todosCompleto) {
+            if (coincideConBusqueda(j, query)) filtradosTodos.add(j);
+        }
+        List<Videojuego> filtradosPropios = new ArrayList<>();
+        for (Videojuego j : propiosCompleto) {
+            if (coincideConBusqueda(j, query)) filtradosPropios.add(j);
+        }
+        adapterTodos.actualizarLista(filtradosTodos);
+        adapterRecomendados.actualizarLista(filtradosPropios);
+    }
+
+    private boolean coincideConBusqueda(Videojuego j, String query) {
+        return (j.getNombre() != null && j.getNombre().toLowerCase().contains(query))
+                || (j.getGenero() != null && j.getGenero().toLowerCase().contains(query))
+                || (j.getDescripcion() != null && j.getDescripcion().toLowerCase().contains(query));
+    }
+
     private void abrirDetalle(Videojuego juego) {
         Intent intent = new Intent(this, DetalleJuegoActivity.class);
         intent.putExtra(DetalleJuegoActivity.EXTRA_JUEGO_ID, juego.getId());
@@ -160,42 +204,31 @@ public class PaginaPrincipalActivity extends AppCompatActivity
         dbJuegos.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                // Limpiamos las listas locales antes de llenarlas con los nuevos datos
-                todosLosJuegos.clear();
-                juegosRecomendados.clear(); // Esta lista ahora contendrá "Tus Juegos"
+                todosCompleto.clear();
+                propiosCompleto.clear();
 
                 for (DataSnapshot ds : snapshot.getChildren()) {
                     Videojuego juego = ds.getValue(Videojuego.class);
                     if (juego != null) {
-                        juego.setId(ds.getKey()); // Guardamos el ID de Firebase en el objeto
-
-                        // FILTRADO: Si el juego fue publicado por el usuario actual (uid)
+                        juego.setId(ds.getKey());
                         if (juego.getPublicadoPor() != null && juego.getPublicadoPor().equals(uid)) {
-                            juegosRecomendados.add(juego); // Va a la sección personal
-                        } else {
-                            // Solo añadimos a "Todos" los juegos que NO son del usuario actual
-                            // y que están disponibles para la compra
-                            if (juego.isDisponible()) {
-                                todosLosJuegos.add(juego);
-                            }
+                            propiosCompleto.add(juego);
+                        } else if (juego.isDisponible()) {
+                            todosCompleto.add(juego);
                         }
                     }
                 }
 
-                // Actualización de la interfaz en el hilo de la vista
-                recyclerTodos.post(() -> {
-                    adapterTodos.actualizarLista(new ArrayList<>(todosLosJuegos));
-                    recyclerTodos.requestLayout();
-                });
+                android.util.Log.d("PAGINA", "Carga finalizada. Propios: " +
+                        propiosCompleto.size() + " | Otros: " + todosCompleto.size());
 
-                recyclerRecomendados.post(() -> {
-                    // Ahora esta lista muestra los juegos creados por ti
-                    adapterRecomendados.actualizarLista(new ArrayList<>(juegosRecomendados));
+                String queryActual = etBuscar != null
+                        ? etBuscar.getText().toString().trim().toLowerCase() : "";
+                recyclerTodos.post(() -> {
+                    filtrarJuegos(queryActual);
+                    recyclerTodos.requestLayout();
                     recyclerRecomendados.requestLayout();
                 });
-
-                android.util.Log.d("PAGINA", "Carga finalizada. Propios: " +
-                        juegosRecomendados.size() + " | Otros: " + todosLosJuegos.size());
             }
 
             @Override

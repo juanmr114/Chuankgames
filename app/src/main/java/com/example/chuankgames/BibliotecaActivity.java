@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -51,8 +52,32 @@ public class BibliotecaActivity extends AppCompatActivity {
         recyclerBiblioteca.setLayoutManager(new GridLayoutManager(this, 2));
         recyclerBiblioteca.setAdapter(adapter);
 
+        configurarBottomNav();
         cargarSaldo();
         cargarBiblioteca();
+    }
+
+    private void configurarBottomNav() {
+        BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
+        bottomNav.setSelectedItemId(R.id.nav_carrito);
+        bottomNav.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.nav_inicio) {
+                Intent i = new Intent(this, PaginaPrincipalActivity.class);
+                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                startActivity(i);
+                return true;
+            } else if (id == R.id.nav_buscar) {
+                startActivity(new Intent(this, NoticiasActivity.class));
+                return true;
+            } else if (id == R.id.nav_añadir) {
+                startActivity(new Intent(this, PublicarJuegoActivity.class));
+                return true;
+            } else if (id == R.id.nav_carrito) {
+                return true;
+            }
+            return false;
+        });
     }
 
     private void cargarSaldo() {

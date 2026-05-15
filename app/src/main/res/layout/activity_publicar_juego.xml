@@ -1,166 +1,199 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/principal">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="24dp">
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollPublicar"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/lineaSeparadora"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Título -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Publicar juego"
-            android:textColor="@color/secundario"
-            android:textSize="26sp"
-            android:textStyle="bold"
-            android:fontFamily="@font/orangekid"
-            android:layout_marginBottom="24dp" />
-
-        <!-- Preview de imagen -->
-        <ImageView
-            android:id="@+id/ivPreviewPortada"
-            android:layout_width="match_parent"
-            android:layout_height="180dp"
-            android:scaleType="centerCrop"
-            android:background="#1E2A38"
-            android:layout_marginBottom="12dp" />
-
-        <!-- URL de imagen -->
-        <com.google.android.material.textfield.TextInputLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="URL de la imagen (https://...)"
-            android:layout_marginBottom="8dp"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            app:boxStrokeColor="@color/secundario"
-            app:hintTextColor="@color/secundario">
+            android:orientation="vertical"
+            android:padding="24dp">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etUrlImagen"
+            <!-- Título -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Publicar juego"
+                android:textColor="@color/secundario"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/orangekid"
+                android:layout_marginBottom="24dp" />
+
+            <!-- Preview de imagen -->
+            <ImageView
+                android:id="@+id/ivPreviewPortada"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:scaleType="centerCrop"
+                android:background="#1E2A38"
+                android:layout_marginBottom="12dp" />
+
+            <!-- URL de imagen -->
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:inputType="textUri"
-                android:imeOptions="actionDone" />
+                android:hint="URL de la imagen (https://...)"
+                android:layout_marginBottom="8dp"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                app:boxStrokeColor="@color/secundario"
+                app:hintTextColor="@color/secundario">
 
-        </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etUrlImagen"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:inputType="textUri"
+                    android:imeOptions="actionDone" />
 
-        <!-- Botón previsualizar -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnPrevisualizar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="👁 Previsualizar"
-            android:textColor="@color/principal"
-            android:backgroundTint="@color/secundario"
-            android:layout_marginBottom="20dp"
-            app:cornerRadius="8dp" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Nombre -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Nombre del juego"
-            android:layout_marginBottom="12dp"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            app:boxStrokeColor="@color/secundario"
-            app:hintTextColor="@color/secundario">
+            <!-- Botón previsualizar -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnPrevisualizar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="👁 Previsualizar"
+                android:textColor="@color/principal"
+                android:backgroundTint="@color/secundario"
+                android:layout_marginBottom="20dp"
+                app:cornerRadius="8dp" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etNombreJuego"
+            <!-- Nombre -->
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:inputType="textCapWords" />
+                android:hint="Nombre del juego"
+                android:layout_marginBottom="12dp"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                app:boxStrokeColor="@color/secundario"
+                app:hintTextColor="@color/secundario">
 
-        </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etNombreJuego"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:inputType="textCapWords" />
 
-        <!-- Género -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Género"
-            android:textColor="@color/secundario"
-            android:textSize="13sp"
-            android:layout_marginBottom="4dp" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-        <Spinner
-            android:id="@+id/spinnerGenero"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:background="@drawable/spinner_bg"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            android:layout_marginBottom="16dp" />
+            <!-- Género -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Género"
+                android:textColor="@color/secundario"
+                android:textSize="13sp"
+                android:layout_marginBottom="4dp" />
 
-        <!-- Descripción -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Descripción"
-            android:layout_marginBottom="12dp"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            app:boxStrokeColor="@color/secundario"
-            app:hintTextColor="@color/secundario">
+            <Spinner
+                android:id="@+id/spinnerGenero"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/spinner_bg"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:layout_marginBottom="16dp" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etDescripcionJuego"
+            <!-- Descripción -->
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:inputType="textMultiLine"
-                android:minLines="3"
-                android:gravity="top" />
+                android:hint="Descripción"
+                android:layout_marginBottom="12dp"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                app:boxStrokeColor="@color/secundario"
+                app:hintTextColor="@color/secundario">
 
-        </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etDescripcionJuego"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:inputType="textMultiLine"
+                    android:minLines="3"
+                    android:gravity="top" />
 
-        <!-- Precio -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Precio (monedas)"
-            android:layout_marginBottom="24dp"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            app:boxStrokeColor="@color/secundario"
-            app:hintTextColor="@color/secundario">
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etPrecioJuego"
+            <!-- Precio -->
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:inputType="numberDecimal" />
+                android:hint="Precio (monedas)"
+                android:layout_marginBottom="24dp"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                app:boxStrokeColor="@color/secundario"
+                app:hintTextColor="@color/secundario">
 
-        </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etPrecioJuego"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:inputType="numberDecimal" />
 
-        <!-- Botón publicar -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnPublicarJuego"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Publicar juego"
-            android:textColor="@color/principal"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:backgroundTint="@color/secundario"
-            android:paddingVertical="14dp"
-            app:cornerRadius="12dp" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-        <ProgressBar
-            android:id="@+id/progressPublicar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="16dp"
-            android:visibility="gone" />
+            <!-- Botón publicar -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnPublicarJuego"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Publicar juego"
+                android:textColor="@color/principal"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:backgroundTint="@color/secundario"
+                android:paddingVertical="14dp"
+                app:cornerRadius="12dp" />
 
-    </LinearLayout>
+            <ProgressBar
+                android:id="@+id/progressPublicar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:visibility="gone" />
 
-</androidx.core.widget.NestedScrollView>
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <View
+        android:id="@+id/lineaSeparadora"
+        android:layout_width="0dp"
+        android:layout_height="3dp"
+        android:background="@color/secundario"
+        app:layout_constraintBottom_toTopOf="@id/bottomNav"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNav"
+        android:layout_width="0dp"
+        android:layout_height="70dp"
+        android:background="@color/principal"
+        app:itemIconTint="@color/bottom_nav_color"
+        app:itemTextColor="@color/bottom_nav_color"
+        app:menu="@menu/menu_bottom_nav"
+        app:labelVisibilityMode="labeled"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -52,14 +52,34 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/ivLogoPrincipal" />
 
+        <!-- Barra de búsqueda -->
+        <EditText
+            android:id="@+id/etBuscar"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginHorizontal="16dp"
+            android:hint="🔍 Buscar videojuego..."
+            android:background="@drawable/bg_campo_busqueda"
+            android:textColor="@color/white"
+            android:textColorHint="#88FFFFFF"
+            android:paddingHorizontal="16dp"
+            android:inputType="text"
+            android:imeOptions="actionSearch"
+            android:singleLine="true"
+            android:textSize="14sp"
+            app:layout_constraintTop_toBottomOf="@id/tvTituloPrincipal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
         <!-- Scroll con las dos secciones -->
         <androidx.core.widget.NestedScrollView
             android:id="@+id/scrollContenido"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             android:clipToPadding="false"
-            app:layout_constraintTop_toBottomOf="@id/tvTituloPrincipal"
+            app:layout_constraintTop_toBottomOf="@id/etBuscar"
             app:layout_constraintBottom_toTopOf="@id/lineaSeparadora"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
