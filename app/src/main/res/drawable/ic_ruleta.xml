@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Aro exterior -->
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M12,2C6.48,2 2,6.48 2,12s4.48,10 10,10 10-4.48 10-10S17.52,2 12,2zM12,20c-4.42,0-8-3.58-8-8s3.58-8 8-8 8,3.58 8,8-3.58,8-8,8z"/>
+    <!-- Radio superior -->
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M11.25,4.1h1.5v5.4h-1.5z"/>
+    <!-- Radio inferior -->
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M11.25,14.5h1.5v5.4h-1.5z"/>
+    <!-- Radio izquierdo -->
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M4.1,11.25h5.4v1.5H4.1z"/>
+    <!-- Radio derecho -->
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M14.5,11.25h5.4v1.5h-5.4z"/>
+    <!-- Punto central -->
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M12,9.75A2.25,2.25 0,0 0,9.75 12A2.25,2.25 0,0 0,12 14.25A2.25,2.25 0,0 0,14.25 12A2.25,2.25 0,0 0,12 9.75Z"/>
+</vector>

@@ -97,6 +97,9 @@ public class PublicarJuegoActivity extends AppCompatActivity {
             } else if (id == R.id.nav_carrito) {
                 startActivity(new Intent(this, BibliotecaActivity.class));
                 return true;
+            } else if (id == R.id.nav_ruleta) {
+                startActivity(new Intent(this, RuletaActivity.class));
+                return true;
             }
             return false;
         });
@@ -130,7 +133,7 @@ public class PublicarJuegoActivity extends AppCompatActivity {
         if (!url.startsWith("http")) { etUrl.setError("La URL debe empezar por http"); return; }
         if (nombre.isEmpty())      { etNombre.setError("Escribe el nombre"); return; }
         if (descripcion.isEmpty()) { etDescripcion.setError("Escribe una descripción"); return; }
-        if (precioStr.isEmpty())   { etPrecio.setError("Escribe el precio en monedas"); return; }
+        if (precioStr.isEmpty())   { etPrecio.setError("Escribe el precio en CK"); return; }
 
         double precio;
         try {

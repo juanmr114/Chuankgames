@@ -21,4 +21,9 @@
         android:icon="@android:drawable/ic_menu_today"
         android:title="Carrito" />
 
+    <item
+        android:id="@+id/nav_ruleta"
+        android:icon="@drawable/ic_ruleta"
+        android:title="Ruleta" />
+
 </menu>

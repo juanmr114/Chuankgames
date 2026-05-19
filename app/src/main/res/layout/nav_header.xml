@@ -2,36 +2,47 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="180dp"
-    android:background="@color/logo_burgundy"
+    android:layout_height="200dp"
+    android:background="@drawable/bg_degradado"
     android:orientation="vertical"
     android:gravity="bottom"
     android:padding="20dp">
 
+    <!-- Línea superior decorativa -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="#33FFD947"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Avatar / logo -->
     <ImageView
         android:id="@+id/navHeaderAvatar"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:src="@mipmap/ic_launcher_round"
-        android:layout_marginBottom="8dp" />
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:src="@mipmap/ic_launcher"
+        android:scaleType="fitCenter"
+        android:layout_marginBottom="10dp" />
 
+    <!-- Nombre del usuario -->
     <TextView
         android:id="@+id/navHeaderNombre"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Usuario"
-        android:textColor="@color/white"
-        android:textSize="18sp"
+        android:textColor="@color/secundario"
+        android:textSize="17sp"
         android:textStyle="bold"
         android:fontFamily="@font/orangekid" />
 
+    <!-- Email del usuario -->
     <TextView
         android:id="@+id/navHeaderEmail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
         android:text="usuario@email.com"
-        android:textColor="#CCFFFFFF"
-        android:textSize="13sp"
-        android:fontFamily="@font/orangekid" />
+        android:textColor="@color/texto_hint"
+        android:textSize="12sp" />
 
 </LinearLayout>

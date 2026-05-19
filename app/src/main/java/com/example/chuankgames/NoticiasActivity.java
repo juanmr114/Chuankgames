@@ -83,6 +83,9 @@ public class NoticiasActivity extends AppCompatActivity {
             } else if (id == R.id.nav_carrito) {
                 startActivity(new Intent(this, BibliotecaActivity.class));
                 return true;
+            } else if (id == R.id.nav_ruleta) {
+                startActivity(new Intent(this, RuletaActivity.class));
+                return true;
             }
             return false;
         });

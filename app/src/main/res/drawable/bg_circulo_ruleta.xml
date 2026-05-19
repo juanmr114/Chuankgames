@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Anillo exterior dorado -->
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="#FFD947" />
+        </shape>
+    </item>
+
+    <!-- Círculo interior oscuro -->
+    <item
+        android:left="6dp" android:top="6dp"
+        android:right="6dp" android:bottom="6dp">
+        <shape android:shape="oval">
+            <gradient
+                android:type="radial"
+                android:gradientRadius="55%p"
+                android:startColor="#1A2B3C"
+                android:endColor="#0D1520" />
+        </shape>
+    </item>
+
+    <!-- Anillo interior decorativo (mediano) -->
+    <item
+        android:left="18dp" android:top="18dp"
+        android:right="18dp" android:bottom="18dp">
+        <shape android:shape="oval">
+            <stroke android:width="2dp" android:color="#66FFD947" />
+            <solid android:color="@android:color/transparent" />
+        </shape>
+    </item>
+
+    <!-- Anillo interior decorativo (pequeño) -->
+    <item
+        android:left="38dp" android:top="38dp"
+        android:right="38dp" android:bottom="38dp">
+        <shape android:shape="oval">
+            <stroke android:width="1dp" android:color="#33FFD947" />
+            <solid android:color="@android:color/transparent" />
+        </shape>
+    </item>
+
+</layer-list>

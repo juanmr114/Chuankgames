@@ -43,7 +43,7 @@ public class VideojuegoAdapter extends RecyclerView.Adapter<VideojuegoAdapter.Vi
         holder.tvNombre.setText(juego.getNombre());
         holder.tvGenero.setText(juego.getGenero());
         holder.tvDescripcion.setText(juego.getDescripcion());
-        holder.tvPrecio.setText(String.format("%.2f€", juego.getPrecio()));
+        holder.tvPrecio.setText("⚡ " + (int) juego.getPrecio() + " CK");
 
         // Cargar imagen desde Firebase Storage con Glide
         if (juego.getImagenUrl() != null && !juego.getImagenUrl().isEmpty()) {

@@ -1,130 +1,219 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/principal">
+    android:background="@drawable/bg_degradado">
 
+    <!-- Header bar con botón volver -->
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:id="@+id/headerDetalle"
+        android:layout_width="0dp"
+        android:layout_height="52dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@color/card_dark"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Imagen portada -->
-        <ImageView
-            android:id="@+id/ivDetallePortada"
-            android:layout_width="match_parent"
-            android:layout_height="220dp"
-            android:scaleType="centerCrop"
-            android:background="#1E2A38" />
+        <ImageButton
+            android:id="@+id/btnVolverDetalle"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@android:drawable/ic_menu_revert"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:tint="@color/secundario"
+            android:padding="10dp"
+            android:contentDescription="Volver" />
 
-        <!-- Saldo del usuario -->
+        <TextView
+            android:id="@+id/tvHeaderNombre"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="16dp"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:maxLines="1"
+            android:ellipsize="end" />
+
+        <!-- Saldo compacto -->
         <TextView
             android:id="@+id/tvSaldoDetalle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:layout_marginEnd="16dp"
-            android:layout_marginTop="12dp"
+            android:layout_marginEnd="12dp"
+            android:text="💶 0€"
             android:textColor="@color/secundario"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:text="💰 Saldo: 0 monedas" />
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <!-- Contenido scrollable -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@android:color/transparent"
+        app:layout_constraintTop_toBottomOf="@id/headerDetalle"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="20dp">
+            android:orientation="vertical">
 
-            <!-- Nombre -->
-            <TextView
-                android:id="@+id/tvDetalleNombre"
+            <!-- Imagen portada -->
+            <ImageView
+                android:id="@+id/ivDetallePortada"
+                android:layout_width="match_parent"
+                android:layout_height="210dp"
+                android:scaleType="centerCrop"
+                android:background="@color/card_dark" />
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/secundario"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:fontFamily="@font/orangekid" />
+                android:orientation="vertical"
+                android:padding="20dp">
 
-            <!-- Género -->
-            <TextView
-                android:id="@+id/tvDetalleGenero"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:textColor="#AAAAAA"
-                android:textSize="13sp" />
+                <!-- Nombre -->
+                <TextView
+                    android:id="@+id/tvDetalleNombre"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/secundario"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/orangekid" />
 
-            <!-- Vendedor -->
-            <TextView
-                android:id="@+id/tvDetalleVendedor"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:textColor="#AAAAAA"
-                android:textSize="13sp" />
+                <!-- Género y vendedor -->
+                <TextView
+                    android:id="@+id/tvDetalleGenero"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textColor="@color/texto_hint"
+                    android:textSize="13sp" />
 
-            <!-- Descripción -->
-            <TextView
-                android:id="@+id/tvDetalleDescripcion"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:textColor="@color/white"
-                android:textSize="14sp"
-                android:lineSpacingMultiplier="1.4" />
+                <TextView
+                    android:id="@+id/tvDetalleVendedor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:textColor="@color/texto_hint"
+                    android:textSize="13sp" />
 
-            <!-- Precio -->
-            <TextView
-                android:id="@+id/tvDetallePrecio"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:textColor="@color/secundario"
-                android:textSize="28sp"
-                android:textStyle="bold"
-                android:fontFamily="@font/orangekid" />
+                <!-- Descripción -->
+                <TextView
+                    android:id="@+id/tvDetalleDescripcion"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:textColor="@color/texto_cuerpo"
+                    android:textSize="14sp"
+                    android:lineSpacingMultiplier="1.4" />
 
-            <!-- Botón comprar -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnComprar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="🛒 Comprar"
-                android:textColor="@color/principal"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:backgroundTint="@color/secundario"
-                android:paddingVertical="14dp"
-                app:cornerRadius="12dp" />
+                <!-- Separador -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/secundario_alpha"
+                    android:layout_marginTop="18dp"
+                    android:layout_marginBottom="16dp" />
 
-            <!-- Botón revender (solo visible si es tuyo) -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnRevender"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:text="🔄 Poner en venta"
-                android:textColor="@color/secundario"
-                android:textSize="15sp"
-                android:backgroundTint="@color/principal"
-                android:paddingVertical="12dp"
-                android:visibility="gone"
-                app:cornerRadius="12dp"
-                app:strokeColor="@color/secundario"
-                app:strokeWidth="1dp" />
+                <!-- Precios -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
 
-            <ProgressBar
-                android:id="@+id/progressDetalle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="12dp"
-                android:visibility="gone" />
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
 
+                        <TextView
+                            android:id="@+id/tvDetallePrecio"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/secundario"
+                            android:textSize="26sp"
+                            android:textStyle="bold"
+                            android:fontFamily="@font/orangekid" />
+
+                        <TextView
+                            android:id="@+id/tvDetallePrecioEuro"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/texto_hint"
+                            android:textSize="13sp" />
+
+                    </LinearLayout>
+
+                    <!-- Bonus CK al pagar con € -->
+                    <TextView
+                        android:id="@+id/tvCKReward"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@color/card_bg"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="6dp"
+                        android:textColor="@color/verde_bonus"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        android:visibility="gone" />
+
+                </LinearLayout>
+
+                <!-- Botón comprar con € -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnComprarEuro"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="🏦 Comprar con €0.00"
+                    android:textColor="@color/principal"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:backgroundTint="@color/secundario"
+                    android:paddingVertical="14dp"
+                    app:cornerRadius="12dp" />
+
+                <!-- Botón revender -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnRevender"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="🔄 Poner en venta"
+                    android:textColor="@color/texto_hint"
+                    android:textSize="14sp"
+                    android:backgroundTint="@color/card_bg"
+                    android:paddingVertical="12dp"
+                    android:visibility="gone"
+                    app:cornerRadius="12dp"
+                    app:strokeColor="@color/card_border"
+                    app:strokeWidth="1dp" />
+
+                <ProgressBar
+                    android:id="@+id/progressDetalle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="12dp"
+                    android:visibility="gone" />
+
+            </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
-</androidx.core.widget.NestedScrollView>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

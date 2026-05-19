@@ -43,6 +43,7 @@ public class PaginaPrincipalActivity extends AppCompatActivity
     private RecyclerView recyclerTodos, recyclerRecomendados;
     private VideojuegoAdapter adapterTodos, adapterRecomendados;
     private EditText etBuscar;
+    private TextView tvSaldoPrincipal, tvEmptyTodos, tvEmptyPropios;
 
     // Listas completas (fuente de verdad desde Firebase)
     private final List<Videojuego> todosCompleto    = new ArrayList<>();
@@ -73,6 +74,7 @@ public class PaginaPrincipalActivity extends AppCompatActivity
         configurarBottomNav();
         configurarRecyclers();
         configurarBuscador();
+        configurarSaldo();
         cargarJuegosDesdeFirebase();
         asegurarSaldoInicial();
     }
@@ -84,16 +86,23 @@ public class PaginaPrincipalActivity extends AppCompatActivity
         recyclerTodos        = findViewById(R.id.recyclerTodos);
         recyclerRecomendados = findViewById(R.id.recyclerRecomendados);
         etBuscar             = findViewById(R.id.etBuscar);
+        tvSaldoPrincipal     = findViewById(R.id.tvSaldoPrincipal);
+        tvEmptyTodos         = findViewById(R.id.tvEmptyTodos);
+        tvEmptyPropios       = findViewById(R.id.tvEmptyPropios);
     }
 
     private void asegurarSaldoInicial() {
         if (uid.isEmpty()) return;
-        dbUsuarios.child(uid).child("saldo").addListenerForSingleValueEvent(new ValueEventListener() {
+        dbUsuarios.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (!snapshot.exists()) {
-                    android.util.Log.d("FIREBASE_TEST", "Número de juegos recibidos: " + snapshot.getChildrenCount());
-                    dbUsuarios.child(uid).child("saldo").setValue(500.0);
+                // Migración: si no existe saldo, inicializar a 0
+                if (!snapshot.child("saldo").exists()) {
+                    dbUsuarios.child(uid).child("saldo").setValue(0.0);
+                }
+                // Migración: si no existe dinero, dar 50€ de bienvenida
+                if (!snapshot.child("dinero").exists()) {
+                    dbUsuarios.child(uid).child("dinero").setValue(50.0);
                 }
             }
             @Override
@@ -140,6 +149,9 @@ public class PaginaPrincipalActivity extends AppCompatActivity
             } else if (id == R.id.nav_carrito) {
                 startActivity(new Intent(this, BibliotecaActivity.class));
                 return true;
+            } else if (id == R.id.nav_ruleta) {
+                startActivity(new Intent(this, RuletaActivity.class));
+                return true;
             }
             return false;
         });
@@ -158,6 +170,21 @@ public class PaginaPrincipalActivity extends AppCompatActivity
         recyclerRecomendados.setAdapter(adapterRecomendados);
         recyclerRecomendados.setNestedScrollingEnabled(false);
         recyclerRecomendados.setHasFixedSize(false);
+    }
+
+    private void configurarSaldo() {
+        // Mostrar euros en el chip principal (más relevante para compras)
+        dbUsuarios.child(uid).child("dinero").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                double dinero = snapshot.exists() ? snapshot.getValue(Double.class) : 0;
+                tvSaldoPrincipal.setText(String.format("💶 %.2f€", dinero));
+            }
+            @Override public void onCancelled(@NonNull DatabaseError error) {}
+        });
+        // Tap en el chip → Ruleta
+        tvSaldoPrincipal.setOnClickListener(v ->
+                startActivity(new Intent(this, RuletaActivity.class)));
     }
 
     private void configurarBuscador() {
@@ -228,6 +255,11 @@ public class PaginaPrincipalActivity extends AppCompatActivity
                     filtrarJuegos(queryActual);
                     recyclerTodos.requestLayout();
                     recyclerRecomendados.requestLayout();
+                    // Empty states
+                    if (tvEmptyTodos != null)
+                        tvEmptyTodos.setVisibility(todosCompleto.isEmpty() ? View.VISIBLE : View.GONE);
+                    if (tvEmptyPropios != null)
+                        tvEmptyPropios.setVisibility(propiosCompleto.isEmpty() ? View.VISIBLE : View.GONE);
                 });
             }
 
@@ -246,6 +278,8 @@ public class PaginaPrincipalActivity extends AppCompatActivity
             Toast.makeText(this, "Mi perfil (próximamente)", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.lateral_compras) {
             startActivity(new Intent(this, BibliotecaActivity.class));
+        } else if (id == R.id.lateral_ruleta) {
+            startActivity(new Intent(this, RuletaActivity.class));
         } else if (id == R.id.lateral_ajustes) {
             Toast.makeText(this, "Ajustes (próximamente)", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.lateral_cerrar_sesion) {
