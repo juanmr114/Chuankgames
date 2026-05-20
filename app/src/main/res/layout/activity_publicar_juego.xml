@@ -134,11 +134,13 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Precio (monedas)"
+                android:hint="Precio en € (ej: 9.99)"
                 android:layout_marginBottom="24dp"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 app:boxStrokeColor="@color/secundario"
-                app:hintTextColor="@color/secundario">
+                app:hintTextColor="@color/secundario"
+                app:prefixText="€ "
+                app:prefixTextColor="@color/secundario">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etPrecioJuego"

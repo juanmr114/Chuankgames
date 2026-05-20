@@ -339,7 +339,10 @@ public class PaginaPrincipalActivity extends AppCompatActivity
                     if (juego != null) {
                         juego.setId(ds.getKey());
                         if (juego.getPublicadoPor() != null && juego.getPublicadoPor().equals(uid)) {
-                            propiosCompleto.add(juego);
+                            // Solo mostrar si está en venta; los comprados van a Biblioteca
+                            if (juego.isDisponible()) {
+                                propiosCompleto.add(juego);
+                            }
                         } else if (juego.isDisponible()) {
                             todosCompleto.add(juego);
                         }

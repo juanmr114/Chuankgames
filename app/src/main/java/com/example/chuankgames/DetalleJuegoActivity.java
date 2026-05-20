@@ -131,8 +131,9 @@ public class DetalleJuegoActivity extends AppCompatActivity {
     private void verificarEstado() {
         if (uid.equals(juegoActual.getPublicadoPor())) {
             btnComprarEuro.setVisibility(View.GONE);
-            btnRevender.setVisibility(View.VISIBLE);
             tvCKReward.setVisibility(View.GONE);
+            // Si ya está en venta (disponible=true) no mostrar el botón de poner en venta
+            btnRevender.setVisibility(juegoActual.isDisponible() ? View.GONE : View.VISIBLE);
             return;
         }
         dbUsuarios.child(uid).child("biblioteca").child(juegoActual.getId())
@@ -159,7 +160,7 @@ public class DetalleJuegoActivity extends AppCompatActivity {
 
         int    ck      = (int) juegoActual.getPrecio();
         double eur     = juegoActual.getPrecioEuros();
-        int    ckBonus = Math.max(1, ck / 10);
+        int    ckBonus = Math.max(1, (int)(eur * 100));  // precio en € × 100
 
         tvPrecio.setText(String.format("💶 €%.2f", eur));
         tvPrecioEuro.setText("⚡ " + ck + " CK equivalente");
@@ -561,7 +562,7 @@ public class DetalleJuegoActivity extends AppCompatActivity {
     private void confirmarReventa() {
         double eur     = juegoActual.getPrecioEuros();
         int    ck      = (int) juegoActual.getPrecio();
-        int    ckBonus = Math.max(1, ck / 10);
+        int    ckBonus = Math.max(1, (int)(eur * 100));  // precio en € × 100
 
         new AlertDialog.Builder(this)
                 .setTitle("🔄 Poner en venta")

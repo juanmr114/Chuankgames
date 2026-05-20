@@ -32,12 +32,12 @@ import java.util.Random;
 public class RuletaActivity extends AppCompatActivity {
 
     // Coste por tirada
-    private static final int COSTE_CK = 50;
+    private static final int COSTE_CK = 200;
 
     // Premios  |  probabilidad acumulada 0-100  |  emojis de cada tier
-    private static final double[] PREMIOS_EUR = { 0.20,  0.50,  1.00,  5.00, 10.00, 20.00 };
-    private static final int[]    PROB_ACUM   = {   40,    65,    85,    95,    99,   100  };
-    private static final String[] EMOJIS      = { "🥉",  "🥈",  "🥇",  "💎",  "👑",  "🌟" };
+    private static final double[] PREMIOS_EUR = {  0.50,  1.00,  3.00,  10.00,  20.00,  30.00 };
+    private static final int[]    PROB_ACUM   = {    40,    65,    85,     95,     99,    100  };
+    private static final String[] EMOJIS      = {  "🥉",  "🥈",  "🥇",  "💎",   "👑",   "🌟" };
 
     // Emojis que desfilan durante el giro (efecto slot)
     private static final String[] POOL_GIRO = {

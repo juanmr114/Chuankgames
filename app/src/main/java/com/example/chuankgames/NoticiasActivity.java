@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.button.MaterialButton;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -34,14 +36,21 @@ public class NoticiasActivity extends AppCompatActivity {
             "&section=games&api-key=test&show-fields=thumbnail,trailText" +
             "&page-size=20&order-by=newest";
 
-    private RecyclerView recyclerNoticias;
-    private NoticiaAdapter adapter;
-    private ProgressBar progressBar;
-    private TextView tvError;
+    // Caché estático para no golpear la API en cada visita
+    private static List<Noticia> cachedNoticias   = null;
+    private static long          cacheTimestamp   = 0;
+    private static final long    CACHE_TTL_MS     = 5 * 60 * 1000; // 5 minutos
 
-    private final List<Noticia> noticias = new ArrayList<>();
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
-    private final Handler handler = new Handler(Looper.getMainLooper());
+    private RecyclerView    recyclerNoticias;
+    private NoticiaAdapter  adapter;
+    private ProgressBar     progressBar;
+    private TextView        tvError;
+    private LinearLayout    layoutError;
+    private MaterialButton  btnReintentar;
+
+    private final List<Noticia>    noticias = new ArrayList<>();
+    private final ExecutorService  executor = Executors.newSingleThreadExecutor();
+    private final Handler          handler  = new Handler(Looper.getMainLooper());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +60,8 @@ public class NoticiasActivity extends AppCompatActivity {
         recyclerNoticias = findViewById(R.id.recyclerNoticias);
         progressBar      = findViewById(R.id.progressNoticias);
         tvError          = findViewById(R.id.tvErrorNoticias);
+        layoutError      = findViewById(R.id.layoutError);
+        btnReintentar    = findViewById(R.id.btnReintentar);
 
         adapter = new NoticiaAdapter(noticias, noticia -> {
             if (noticia.getUrl() != null && !noticia.getUrl().isEmpty()) {
@@ -60,6 +71,11 @@ public class NoticiasActivity extends AppCompatActivity {
 
         recyclerNoticias.setLayoutManager(new LinearLayoutManager(this));
         recyclerNoticias.setAdapter(adapter);
+
+        btnReintentar.setOnClickListener(v -> {
+            cachedNoticias = null;   // forzar recarga
+            cargarNoticias();
+        });
 
         configurarBottomNav();
         cargarNoticias();
@@ -92,8 +108,14 @@ public class NoticiasActivity extends AppCompatActivity {
     }
 
     private void cargarNoticias() {
-        progressBar.setVisibility(View.VISIBLE);
-        tvError.setVisibility(View.GONE);
+        // Si tenemos caché fresca, usarla directamente
+        if (cachedNoticias != null &&
+                System.currentTimeMillis() - cacheTimestamp < CACHE_TTL_MS) {
+            mostrarNoticias(cachedNoticias);
+            return;
+        }
+
+        mostrarEstado(true, false, "");
 
         executor.execute(() -> {
             try {
@@ -102,10 +124,16 @@ public class NoticiasActivity extends AppCompatActivity {
                 conn.setRequestMethod("GET");
                 conn.setConnectTimeout(10000);
                 conn.setReadTimeout(10000);
+                conn.setRequestProperty("User-Agent", "ChuankgamesApp/1.0");
 
-                int responseCode = conn.getResponseCode();
-                if (responseCode != 200) {
-                    throw new Exception("Respuesta del servidor: " + responseCode);
+                int code = conn.getResponseCode();
+
+                if (code == 429) {
+                    throw new Exception("⚠️ Demasiadas peticiones a la API.\n" +
+                            "Espera un momento y pulsa Reintentar.");
+                }
+                if (code != 200) {
+                    throw new Exception("Error del servidor: " + code);
                 }
 
                 BufferedReader reader = new BufferedReader(
@@ -115,8 +143,8 @@ public class NoticiasActivity extends AppCompatActivity {
                 while ((line = reader.readLine()) != null) sb.append(line);
                 reader.close();
 
-                JSONObject json    = new JSONObject(sb.toString());
-                JSONArray results  = json.getJSONObject("response").getJSONArray("results");
+                JSONObject json   = new JSONObject(sb.toString());
+                JSONArray results = json.getJSONObject("response").getJSONArray("results");
                 List<Noticia> resultado = new ArrayList<>();
 
                 for (int i = 0; i < results.length(); i++) {
@@ -131,28 +159,40 @@ public class NoticiasActivity extends AppCompatActivity {
                     String fecha       = art.optString("webPublicationDate", "");
 
                     if (!titulo.isEmpty() && !descripcion.isEmpty()) {
-                        resultado.add(new Noticia(titulo, descripcion, urlImagen, urlArt, "The Guardian", fecha));
+                        resultado.add(new Noticia(titulo, descripcion, urlImagen,
+                                urlArt, "The Guardian", fecha));
                     }
                 }
 
+                // Guardar en caché
+                cachedNoticias = resultado;
+                cacheTimestamp = System.currentTimeMillis();
+
                 handler.post(() -> {
-                    progressBar.setVisibility(View.GONE);
                     if (resultado.isEmpty()) {
-                        tvError.setVisibility(View.VISIBLE);
-                        tvError.setText("No se encontraron noticias.");
+                        mostrarEstado(false, true, "No se encontraron noticias.");
                     } else {
-                        adapter.setLista(resultado);
+                        mostrarNoticias(resultado);
                     }
                 });
 
             } catch (Exception e) {
-                handler.post(() -> {
-                    progressBar.setVisibility(View.GONE);
-                    tvError.setVisibility(View.VISIBLE);
-                    tvError.setText("Error cargando noticias.\n" + e.getMessage());
-                });
+                handler.post(() ->
+                        mostrarEstado(false, true, e.getMessage()));
             }
         });
+    }
+
+    private void mostrarNoticias(List<Noticia> lista) {
+        mostrarEstado(false, false, "");
+        adapter.setLista(lista);
+    }
+
+    private void mostrarEstado(boolean cargando, boolean error, String msg) {
+        progressBar.setVisibility(cargando ? View.VISIBLE : View.GONE);
+        layoutError.setVisibility(error    ? View.VISIBLE : View.GONE);
+        recyclerNoticias.setVisibility(!cargando && !error ? View.VISIBLE : View.GONE);
+        if (error) tvError.setText(msg);
     }
 
     @Override

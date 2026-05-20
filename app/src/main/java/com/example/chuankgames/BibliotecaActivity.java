@@ -66,7 +66,7 @@ public class BibliotecaActivity extends AppCompatActivity {
             h.tvNombre.setText(j.nombre);
 
             int    ck  = (int) j.precio;
-            double eur = j.precio / 100.0;
+            double eur = j.precio / 10.0;
             h.tvPrecio.setText("💶 " + String.format("€%.2f", eur) + "  ·  ⚡ " + ck + " CK");
             h.tvPago.setText("Cobro: 💶 Euros");
 

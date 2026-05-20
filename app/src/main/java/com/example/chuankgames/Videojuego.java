@@ -46,6 +46,6 @@ public class Videojuego {
     public String  getPagoPreferido()                  { return pagoPreferido != null ? pagoPreferido : "euro"; }
     public void    setPagoPreferido(String p)          { this.pagoPreferido = p; }
 
-    /** Precio en euros (100 CK = 1 €) */
-    public double getPrecioEuros() { return precio / 100.0; }
+    /** Precio en euros (10 CK = 1 €) */
+    public double getPrecioEuros() { return precio / 10.0; }
 }

@@ -30,19 +30,38 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <TextView
-        android:id="@+id/tvErrorNoticias"
+    <LinearLayout
+        android:id="@+id/layoutError"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#AAAAAA"
-        android:textSize="14sp"
-        android:visibility="gone"
+        android:orientation="vertical"
         android:gravity="center"
-        android:padding="32dp"
+        android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@id/tvTituloNoticias"
         app:layout_constraintBottom_toTopOf="@id/lineaSeparadora"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        xmlns:android="http://schemas.android.com/apk/res/android">
+
+        <TextView
+            android:id="@+id/tvErrorNoticias"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#AAAAAA"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:padding="24dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnReintentar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🔄 Reintentar"
+            android:textColor="@color/principal"
+            android:backgroundTint="@color/secundario"
+            app:cornerRadius="20dp" />
+
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerNoticias"

@@ -6,49 +6,15 @@
     android:layout_height="match_parent"
     android:background="@drawable/bg_degradado">
 
-    <!-- Header (sin botón volver — lo ponemos abajo) -->
-    <LinearLayout
-        android:id="@+id/headerRuleta"
-        android:layout_width="0dp"
-        android:layout_height="52dp"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:background="@color/card_dark"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="16dp"
-            android:text="🎰 Ruleta"
-            android:textColor="@color/secundario"
-            android:textSize="17sp"
-            android:textStyle="bold"
-            android:fontFamily="@font/orangekid" />
-
-        <!-- CK disponibles -->
-        <TextView
-            android:id="@+id/tvSaldoRuleta"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:text="⚡ 0 CK"
-            android:textColor="@color/secundario"
-            android:textSize="13sp"
-            android:textStyle="bold" />
-
-    </LinearLayout>
-
-    <!-- Contenido scrollable -->
+    <!-- ══════════════════════════════════════
+         CONTENIDO SCROLLABLE
+         ══════════════════════════════════════ -->
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollRuleta"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@android:color/transparent"
-        app:layout_constraintTop_toBottomOf="@id/headerRuleta"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/lineaSeparadora"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -57,36 +23,79 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingHorizontal="20dp"
-            android:paddingTop="20dp"
-            android:paddingBottom="12dp"
-            android:gravity="center_horizontal">
+            android:gravity="center_horizontal"
+            android:paddingHorizontal="18dp"
+            android:paddingTop="22dp"
+            android:paddingBottom="14dp">
 
-            <!-- Indicador de precio encima de la ruleta -->
+            <!-- ── Título ── -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:text="⚡ 50 CK por tirada"
+                android:text="🎰 Ruleta"
+                android:textColor="@color/secundario"
+                android:textSize="32sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/orangekid"
+                android:gravity="center" />
+
+            <!-- ── Chip saldo CK ── -->
+            <TextView
+                android:id="@+id/tvSaldoRuleta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="⚡ 0 CK"
+                android:textColor="@color/principal"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:background="@drawable/bg_chip_ck"
+                android:paddingHorizontal="18dp"
+                android:paddingVertical="7dp" />
+
+            <!-- ── Coste por tirada ── -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="⚡ 200 CK por tirada"
                 android:textColor="@color/texto_hint"
                 android:textSize="12sp"
                 android:gravity="center" />
 
-            <!-- Círculo de la ruleta -->
+            <!-- ══════════════════════════════════════
+                 ZONA DE RULETA CON ANILLO DORADO
+                 ══════════════════════════════════════ -->
             <FrameLayout
-                android:id="@+id/frameRuleta"
-                android:layout_width="260dp"
-                android:layout_height="260dp">
+                android:layout_width="300dp"
+                android:layout_height="300dp"
+                android:layout_marginTop="24dp">
 
-                <!-- La rueda que gira -->
+                <!-- Anillo dorado exterior -->
+                <View
+                    android:layout_width="300dp"
+                    android:layout_height="300dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/bg_ring_dorado" />
+
+                <!-- Segundo anillo (más pequeño, efecto doble aro) -->
+                <View
+                    android:layout_width="288dp"
+                    android:layout_height="288dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/bg_ring_dorado"
+                    android:alpha="0.35" />
+
+                <!-- La rueda giratoria -->
                 <ImageView
                     android:id="@+id/ivRuleta"
-                    android:layout_width="260dp"
-                    android:layout_height="260dp"
+                    android:layout_width="278dp"
+                    android:layout_height="278dp"
+                    android:layout_gravity="center"
                     android:src="@drawable/bg_circulo_ruleta"
                     android:scaleType="fitXY" />
 
-                <!-- Contenido encima de la rueda (emoji + resultado) -->
+                <!-- Emoji + resultado superpuestos en el centro -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -98,56 +107,87 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="🎰"
-                        android:textSize="72sp"
+                        android:textSize="68sp"
                         android:gravity="center" />
 
                     <TextView
                         android:id="@+id/tvResultadoRuleta"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
                         android:text="¡Gira!"
                         android:textColor="@color/secundario"
                         android:textSize="20sp"
                         android:textStyle="bold"
-                        android:gravity="center" />
+                        android:gravity="center"
+                        android:fontFamily="@font/orangekid" />
 
                 </LinearLayout>
-
             </FrameLayout>
 
-            <!-- Botón GIRAR grande -->
+            <!-- ── Botón GIRAR (grande y llamativo) ── -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnGirar"
-                android:layout_width="220dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="58dp"
+                android:layout_marginTop="26dp"
                 android:text="🎰  ¡GIRAR!"
                 android:textColor="@color/principal"
-                android:textSize="17sp"
+                android:textSize="18sp"
                 android:textStyle="bold"
                 android:backgroundTint="@color/secundario"
-                android:paddingVertical="16dp"
-                app:cornerRadius="30dp" />
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:letterSpacing="0.05"
+                app:cornerRadius="29dp" />
 
-            <!-- Historial de tiradas -->
-            <TextView
-                android:id="@+id/tvHistorialRuleta"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:textColor="@color/texto_hint"
-                android:textSize="12sp"
-                android:gravity="center"
-                android:lineSpacingMultiplier="1.6" />
-
-            <!-- Tabla de premios -->
+            <!-- ── Historial de últimas tiradas ── -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="18dp"
                 app:cardCornerRadius="14dp"
                 app:cardBackgroundColor="@color/card_bg"
-                app:cardElevation="6dp">
+                app:cardElevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="14dp"
+                    android:paddingVertical="12dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="ÚLTIMAS TIRADAS"
+                        android:textColor="@color/texto_hint"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.12"
+                        android:layout_marginBottom="6dp" />
+
+                    <TextView
+                        android:id="@+id/tvHistorialRuleta"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/secundario"
+                        android:textSize="14sp"
+                        android:gravity="center"
+                        android:lineSpacingMultiplier="1.5"
+                        android:text="—" />
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- ── Tabla de premios ── -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:cardCornerRadius="16dp"
+                app:cardBackgroundColor="@color/card_bg"
+                app:cardElevation="4dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -162,35 +202,49 @@
                         android:textColor="@color/white"
                         android:textSize="14sp"
                         android:textStyle="bold"
-                        android:layout_marginBottom="12dp" />
+                        android:fontFamily="@font/orangekid"
+                        android:layout_marginBottom="14dp" />
 
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="8dp">
-                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="🥉  €0.20" android:textColor="@color/texto_cuerpo" android:textSize="13sp" />
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="40%" android:textColor="@color/texto_hint" android:textSize="13sp" />
+                    <!-- Fila premio: 🥉 -->
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="10dp">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="🥉  €0.50" android:textColor="@color/texto_cuerpo" android:textSize="14sp" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="40%" android:textColor="@color/texto_hint" android:textSize="12sp" android:background="@drawable/bg_chip_genero" android:paddingHorizontal="8dp" android:paddingVertical="3dp" />
                     </LinearLayout>
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="8dp">
-                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="🥈  €0.50" android:textColor="@color/texto_cuerpo" android:textSize="13sp" />
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="25%" android:textColor="@color/texto_hint" android:textSize="13sp" />
+
+                    <!-- Fila premio: 🥈 -->
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="10dp">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="🥈  €1.00" android:textColor="@color/texto_cuerpo" android:textSize="14sp" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="25%" android:textColor="@color/texto_hint" android:textSize="12sp" android:background="@drawable/bg_chip_genero" android:paddingHorizontal="8dp" android:paddingVertical="3dp" />
                     </LinearLayout>
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="8dp">
-                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="🥇  €1.00" android:textColor="@color/texto_cuerpo" android:textSize="13sp" />
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="20%" android:textColor="@color/texto_hint" android:textSize="13sp" />
+
+                    <!-- Fila premio: 🥇 -->
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="10dp">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="🥇  €3.00" android:textColor="@color/texto_cuerpo" android:textSize="14sp" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="20%" android:textColor="@color/texto_hint" android:textSize="12sp" android:background="@drawable/bg_chip_genero" android:paddingHorizontal="8dp" android:paddingVertical="3dp" />
                     </LinearLayout>
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="8dp">
-                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="💎  €5.00" android:textColor="@color/secundario" android:textSize="13sp" android:textStyle="bold" />
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="10%" android:textColor="@color/texto_hint" android:textSize="13sp" />
+
+                    <!-- Separador visual antes de los premios grandes -->
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/secundario_alpha" android:layout_marginBottom="10dp" />
+
+                    <!-- Fila premio: 💎 -->
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="10dp">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="💎  €10.00" android:textColor="@color/secundario" android:textSize="14sp" android:textStyle="bold" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="10%" android:textColor="@color/texto_hint" android:textSize="12sp" android:background="@drawable/bg_chip_genero" android:paddingHorizontal="8dp" android:paddingVertical="3dp" />
                     </LinearLayout>
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="8dp">
-                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="👑  €10.00" android:textColor="@color/secundario" android:textSize="13sp" android:textStyle="bold" />
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="4%" android:textColor="@color/texto_hint" android:textSize="13sp" />
+
+                    <!-- Fila premio: 👑 -->
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="10dp">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="👑  €20.00" android:textColor="@color/secundario" android:textSize="14sp" android:textStyle="bold" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="4%" android:textColor="@color/texto_hint" android:textSize="12sp" android:background="@drawable/bg_chip_genero" android:paddingHorizontal="8dp" android:paddingVertical="3dp" />
                     </LinearLayout>
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
-                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="🌟  €20.00" android:textColor="@color/verde_bonus" android:textSize="13sp" android:textStyle="bold" />
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="1%" android:textColor="@color/texto_hint" android:textSize="13sp" />
+
+                    <!-- Fila premio: 🌟 JACKPOT -->
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="🌟  €30.00  JACKPOT" android:textColor="@color/verde_bonus" android:textSize="14sp" android:textStyle="bold" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="1%" android:textColor="@color/texto_hint" android:textSize="12sp" android:background="@drawable/bg_chip_genero" android:paddingHorizontal="8dp" android:paddingVertical="3dp" />
                     </LinearLayout>
 
                 </LinearLayout>
-
             </androidx.cardview.widget.CardView>
 
         </LinearLayout>
