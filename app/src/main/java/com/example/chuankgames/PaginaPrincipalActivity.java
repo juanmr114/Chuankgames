@@ -1,13 +1,15 @@
 package com.example.chuankgames;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,36 +38,41 @@ public class PaginaPrincipalActivity extends AppCompatActivity
 
     private static final String DB_URL = "https://chuankgames-default-rtdb.europe-west1.firebasedatabase.app";
 
-    private DrawerLayout drawerLayout;
+    private DrawerLayout       drawerLayout;
     private BottomNavigationView bottomNav;
-    private NavigationView navigationView;
+    private NavigationView     navigationView;
 
-    private RecyclerView recyclerTodos, recyclerRecomendados;
-    private VideojuegoAdapter adapterTodos, adapterRecomendados;
-    private EditText etBuscar;
-    private TextView tvSaldoPrincipal, tvEmptyTodos, tvEmptyPropios;
+    private RecyclerView       recyclerTodos, recyclerRecomendados;
+    private VideojuegoAdapter  adapterTodos, adapterRecomendados;
+    private EditText           etBuscar;
+    private TextView           tvSaldoPrincipal, tvEmptyTodos, tvEmptyPropios;
+    private LinearLayout       layoutChipsGenero, layoutChipsPrecio;
 
-    // Listas completas (fuente de verdad desde Firebase)
-    private final List<Videojuego> todosCompleto    = new ArrayList<>();
-    private final List<Videojuego> propiosCompleto  = new ArrayList<>();
-    // Listas que muestran los adaptadores (pueden estar filtradas)
-    private final List<Videojuego> todosLosJuegos     = new ArrayList<>();
+    // Listas fuente de verdad
+    private final List<Videojuego> todosCompleto   = new ArrayList<>();
+    private final List<Videojuego> propiosCompleto = new ArrayList<>();
+    // Listas que muestra el adaptador
+    private final List<Videojuego> todosLosJuegos    = new ArrayList<>();
     private final List<Videojuego> juegosRecomendados = new ArrayList<>();
 
     private DatabaseReference dbJuegos, dbUsuarios;
     private String uid;
-    private String generoFavorito = "Acción";
+
+    // Estado de filtros
+    private String generoFiltro    = "";   // "" = todos
+    private double precioMaxFiltro = -1;   // -1 = sin límite
+    // Chip activo label (para resaltar el seleccionado)
+    private String chipGeneroActivo  = "Todos";
+    private String chipPrecioActivo  = "Todos";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pagina_principal);
-        android.util.Log.d("PAGINA", "onCreate ejecutado");
 
         uid        = FirebaseAuth.getInstance().getCurrentUser() != null
                 ? FirebaseAuth.getInstance().getCurrentUser().getUid() : "";
-        // Busca donde inicializas dbJuegos y dbUsuarios y cámbialo por:
-        dbJuegos = FirebaseDatabase.getInstance(DB_URL).getReference("videojuegos");
+        dbJuegos   = FirebaseDatabase.getInstance(DB_URL).getReference("videojuegos");
         dbUsuarios = FirebaseDatabase.getInstance(DB_URL).getReference("usuarios");
 
         inicializarVistas();
@@ -74,6 +81,7 @@ public class PaginaPrincipalActivity extends AppCompatActivity
         configurarBottomNav();
         configurarRecyclers();
         configurarBuscador();
+        setupFiltros();
         configurarSaldo();
         cargarJuegosDesdeFirebase();
         asegurarSaldoInicial();
@@ -89,35 +97,114 @@ public class PaginaPrincipalActivity extends AppCompatActivity
         tvSaldoPrincipal     = findViewById(R.id.tvSaldoPrincipal);
         tvEmptyTodos         = findViewById(R.id.tvEmptyTodos);
         tvEmptyPropios       = findViewById(R.id.tvEmptyPropios);
+        layoutChipsGenero    = findViewById(R.id.layoutChipsGenero);
+        layoutChipsPrecio    = findViewById(R.id.layoutChipsPrecio);
     }
+
+    // ── Filtros ───────────────────────────────────────────────────────────
+
+    private void setupFiltros() {
+        // Géneros disponibles
+        String[] generos = {
+                "Todos", "Acción", "Aventura", "RPG", "Deportes",
+                "Simulación", "Estrategia", "Puzzle", "Terror",
+                "Multijugador", "Sandbox", "Plataformas", "Carreras",
+                "Lucha", "Shooter", "Indie"
+        };
+        for (String genero : generos) {
+            boolean activo = genero.equals("Todos");
+            TextView chip  = crearChip(genero, activo);
+            chip.setOnClickListener(v -> {
+                generoFiltro       = genero.equals("Todos") ? "" : genero;
+                chipGeneroActivo   = genero;
+                actualizarChips(layoutChipsGenero, genero);
+                filtrarJuegos(queryActual());
+            });
+            layoutChipsGenero.addView(chip);
+        }
+
+        // Opciones de precio
+        double[] precios     = { -1,   1.0,  5.0, 10.0, 20.0, 50.0 };
+        String[] labPrecio   = {"Todos", "< €1", "< €5", "< €10", "< €20", "< €50"};
+        for (int i = 0; i < precios.length; i++) {
+            final double precio = precios[i];
+            final String label  = labPrecio[i];
+            boolean activo = label.equals("Todos");
+            TextView chip  = crearChip(label, activo);
+            chip.setOnClickListener(v -> {
+                precioMaxFiltro  = precio;
+                chipPrecioActivo = label;
+                actualizarChips(layoutChipsPrecio, label);
+                filtrarJuegos(queryActual());
+            });
+            layoutChipsPrecio.addView(chip);
+        }
+    }
+
+    /** Crea un TextView con estilo de chip. */
+    private TextView crearChip(String texto, boolean activo) {
+        TextView chip = new TextView(this);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.setMargins(0, 0, dp(8), 0);
+        chip.setLayoutParams(params);
+        chip.setText(texto);
+        chip.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 12);
+        chip.setTypeface(null, Typeface.BOLD);
+        chip.setPadding(dp(12), dp(5), dp(12), dp(5));
+        aplicarEstiloChip(chip, activo);
+        return chip;
+    }
+
+    private void aplicarEstiloChip(TextView chip, boolean activo) {
+        if (activo) {
+            chip.setBackground(getDrawable(R.drawable.bg_chip_ck));
+            chip.setTextColor(getColor(R.color.principal));
+        } else {
+            chip.setBackground(getDrawable(R.drawable.bg_btn_outline));
+            chip.setTextColor(getColor(R.color.secundario));
+        }
+    }
+
+    private void actualizarChips(LinearLayout container, String seleccionado) {
+        for (int i = 0; i < container.getChildCount(); i++) {
+            TextView chip = (TextView) container.getChildAt(i);
+            aplicarEstiloChip(chip, chip.getText().toString().equals(seleccionado));
+        }
+    }
+
+    private int dp(int dp) {
+        return Math.round(dp * getResources().getDisplayMetrics().density);
+    }
+
+    private String queryActual() {
+        return etBuscar != null ? etBuscar.getText().toString().trim().toLowerCase() : "";
+    }
+
+    // ── Navegación ────────────────────────────────────────────────────────
 
     private void asegurarSaldoInicial() {
         if (uid.isEmpty()) return;
         dbUsuarios.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                // Migración: si no existe saldo, inicializar a 0
-                if (!snapshot.child("saldo").exists()) {
+                if (!snapshot.child("saldo").exists())
                     dbUsuarios.child(uid).child("saldo").setValue(0.0);
-                }
-                // Migración: si no existe dinero, dar 50€ de bienvenida
-                if (!snapshot.child("dinero").exists()) {
+                if (!snapshot.child("dinero").exists())
                     dbUsuarios.child(uid).child("dinero").setValue(50.0);
-                }
             }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {}
+            @Override public void onCancelled(@NonNull DatabaseError error) {}
         });
     }
 
     private void configurarToolbar() {
         View btnMenu = findViewById(R.id.btnMenu);
         btnMenu.setOnClickListener(v -> {
-            if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            if (drawerLayout.isDrawerOpen(GravityCompat.START))
                 drawerLayout.closeDrawer(GravityCompat.START);
-            } else {
+            else
                 drawerLayout.openDrawer(GravityCompat.START);
-            }
         });
     }
 
@@ -173,7 +260,6 @@ public class PaginaPrincipalActivity extends AppCompatActivity
     }
 
     private void configurarSaldo() {
-        // Mostrar euros en el chip principal (más relevante para compras)
         dbUsuarios.child(uid).child("dinero").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -182,43 +268,57 @@ public class PaginaPrincipalActivity extends AppCompatActivity
             }
             @Override public void onCancelled(@NonNull DatabaseError error) {}
         });
-        // Tap en el chip → Ruleta
         tvSaldoPrincipal.setOnClickListener(v ->
                 startActivity(new Intent(this, RuletaActivity.class)));
     }
 
     private void configurarBuscador() {
         etBuscar.addTextChangedListener(new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
+            @Override public void beforeTextChanged(CharSequence s, int st, int c, int a) {}
+            @Override public void onTextChanged(CharSequence s, int st, int b, int c) {
                 filtrarJuegos(s.toString().trim().toLowerCase());
             }
             @Override public void afterTextChanged(Editable s) {}
         });
     }
 
+    // ── Filtrado ──────────────────────────────────────────────────────────
+
     private void filtrarJuegos(String query) {
-        if (query.isEmpty()) {
-            adapterTodos.actualizarLista(new ArrayList<>(todosCompleto));
-            adapterRecomendados.actualizarLista(new ArrayList<>(propiosCompleto));
-            return;
+        List<Videojuego> filtTodos = new ArrayList<>();
+        for (Videojuego j : todosCompleto)
+            if (pasaFiltros(j, query)) filtTodos.add(j);
+
+        List<Videojuego> filtPropios = new ArrayList<>();
+        for (Videojuego j : propiosCompleto)
+            if (pasaFiltros(j, query)) filtPropios.add(j);
+
+        adapterTodos.actualizarLista(filtTodos);
+        adapterRecomendados.actualizarLista(filtPropios);
+
+        if (tvEmptyTodos != null)
+            tvEmptyTodos.setVisibility(filtTodos.isEmpty() ? View.VISIBLE : View.GONE);
+        if (tvEmptyPropios != null)
+            tvEmptyPropios.setVisibility(filtPropios.isEmpty() ? View.VISIBLE : View.GONE);
+    }
+
+    private boolean pasaFiltros(Videojuego j, String query) {
+        // Búsqueda de texto
+        if (!query.isEmpty() && !coincideConBusqueda(j, query)) return false;
+        // Filtro de género
+        if (!generoFiltro.isEmpty()) {
+            String g = j.getGenero() != null ? j.getGenero() : "";
+            if (!generoFiltro.equalsIgnoreCase(g)) return false;
         }
-        List<Videojuego> filtradosTodos = new ArrayList<>();
-        for (Videojuego j : todosCompleto) {
-            if (coincideConBusqueda(j, query)) filtradosTodos.add(j);
-        }
-        List<Videojuego> filtradosPropios = new ArrayList<>();
-        for (Videojuego j : propiosCompleto) {
-            if (coincideConBusqueda(j, query)) filtradosPropios.add(j);
-        }
-        adapterTodos.actualizarLista(filtradosTodos);
-        adapterRecomendados.actualizarLista(filtradosPropios);
+        // Filtro de precio máximo
+        if (precioMaxFiltro > 0 && j.getPrecioEuros() >= precioMaxFiltro) return false;
+        return true;
     }
 
     private boolean coincideConBusqueda(Videojuego j, String query) {
-        return (j.getNombre() != null && j.getNombre().toLowerCase().contains(query))
-                || (j.getGenero() != null && j.getGenero().toLowerCase().contains(query))
-                || (j.getDescripcion() != null && j.getDescripcion().toLowerCase().contains(query));
+        return (j.getNombre()      != null && j.getNombre().toLowerCase().contains(query))
+            || (j.getGenero()      != null && j.getGenero().toLowerCase().contains(query))
+            || (j.getDescripcion() != null && j.getDescripcion().toLowerCase().contains(query));
     }
 
     private void abrirDetalle(Videojuego juego) {
@@ -246,31 +346,20 @@ public class PaginaPrincipalActivity extends AppCompatActivity
                     }
                 }
 
-                android.util.Log.d("PAGINA", "Carga finalizada. Propios: " +
-                        propiosCompleto.size() + " | Otros: " + todosCompleto.size());
-
-                String queryActual = etBuscar != null
-                        ? etBuscar.getText().toString().trim().toLowerCase() : "";
                 recyclerTodos.post(() -> {
-                    filtrarJuegos(queryActual);
+                    filtrarJuegos(queryActual());
                     recyclerTodos.requestLayout();
                     recyclerRecomendados.requestLayout();
-                    // Empty states
-                    if (tvEmptyTodos != null)
-                        tvEmptyTodos.setVisibility(todosCompleto.isEmpty() ? View.VISIBLE : View.GONE);
-                    if (tvEmptyPropios != null)
-                        tvEmptyPropios.setVisibility(propiosCompleto.isEmpty() ? View.VISIBLE : View.GONE);
                 });
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Toast.makeText(PaginaPrincipalActivity.this,
-                        "Error al sincronizar con la base de datos: " + error.getMessage(),
-                        Toast.LENGTH_SHORT).show();
+                        "Error al sincronizar: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
@@ -292,10 +381,9 @@ public class PaginaPrincipalActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START))
             drawerLayout.closeDrawer(GravityCompat.START);
-        } else {
+        else
             super.onBackPressed();
-        }
     }
 }

@@ -1,8 +1,13 @@
 package com.example.chuankgames;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ImageButton;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -15,6 +20,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -30,7 +37,7 @@ public class DetalleJuegoActivity extends AppCompatActivity {
     public static final String EXTRA_JUEGO_ID = "juego_id";
 
     // Views
-    private ImageButton    btnVolver;
+    private MaterialButton btnVolver;
     private TextView       tvHeaderNombre, tvSaldoDetalle;
     private ImageView      ivPortada;
     private TextView       tvNombre, tvGenero, tvVendedor, tvDescripcion;
@@ -75,7 +82,7 @@ public class DetalleJuegoActivity extends AppCompatActivity {
         progressBar    = findViewById(R.id.progressDetalle);
 
         btnVolver.setOnClickListener(v -> finish());
-        btnComprarEuro.setOnClickListener(v -> confirmarCompraEuro());
+        btnComprarEuro.setOnClickListener(v -> mostrarEleccionPago());
         btnRevender.setOnClickListener(v -> confirmarReventa());
 
         String juegoId = getIntent().getStringExtra(EXTRA_JUEGO_ID);
@@ -122,14 +129,12 @@ public class DetalleJuegoActivity extends AppCompatActivity {
     }
 
     private void verificarEstado() {
-        // El usuario es el publicador (su propio juego)
         if (uid.equals(juegoActual.getPublicadoPor())) {
             btnComprarEuro.setVisibility(View.GONE);
             btnRevender.setVisibility(View.VISIBLE);
             tvCKReward.setVisibility(View.GONE);
             return;
         }
-        // Comprobar si ya está en la biblioteca del usuario
         dbUsuarios.child(uid).child("biblioteca").child(juegoActual.getId())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -154,9 +159,8 @@ public class DetalleJuegoActivity extends AppCompatActivity {
 
         int    ck      = (int) juegoActual.getPrecio();
         double eur     = juegoActual.getPrecioEuros();
-        int    ckBonus = Math.max(1, ck / 10);   // 10% del valor en CK
+        int    ckBonus = Math.max(1, ck / 10);
 
-        // Precio principal en € (grande y dorado)
         tvPrecio.setText(String.format("💶 €%.2f", eur));
         tvPrecioEuro.setText("⚡ " + ck + " CK equivalente");
         tvCKReward.setText("🎁 +" + ckBonus + " CK  tú · vendedor");
@@ -187,19 +191,40 @@ public class DetalleJuegoActivity extends AppCompatActivity {
         btnRevender.setVisibility(View.VISIBLE);
     }
 
-    // ── Compra con € ──────────────────────────────────────────────────────
+    // ── Elección de método de pago ────────────────────────────────────────
 
-    private void confirmarCompraEuro() {
+    private void mostrarEleccionPago() {
         double precioEur = juegoActual.getPrecioEuros();
         int    precioCK  = (int) juegoActual.getPrecio();
         int    ckBonus   = Math.max(1, precioCK / 10);
 
+        String[] opciones = {
+            "💳  Tarjeta bancaria",
+            String.format("💶  Cartera de la app  (€%.2f disponibles)", saldoEur)
+        };
+
+        new AlertDialog.Builder(this)
+                .setTitle(String.format("🏦 Pagar €%.2f — ¿cómo?", precioEur))
+                .setItems(opciones, (dialog, which) -> {
+                    if (which == 0) {
+                        mostrarFormularioTarjeta(precioEur, precioCK, ckBonus);
+                    } else {
+                        confirmarCompraCartera(precioEur, precioCK, ckBonus);
+                    }
+                })
+                .setNegativeButton("Cancelar", null)
+                .show();
+    }
+
+    // ── Compra con cartera (€ de la app) ─────────────────────────────────
+
+    private void confirmarCompraCartera(double precioEur, int precioCK, int ckBonus) {
         if (saldoEur < precioEur) {
             new AlertDialog.Builder(this)
                     .setTitle("❌ Euros insuficientes")
                     .setMessage(String.format(
                             "Necesitas: €%.2f\nTienes:    €%.2f\n\n" +
-                            "Añade dinero desde tu 📚 Biblioteca o gana euros en la 🎰 Ruleta.",
+                            "Puedes ganar euros en la 🎰 Ruleta.",
                             precioEur, saldoEur))
                     .setPositiveButton("Entendido", null)
                     .show();
@@ -207,7 +232,7 @@ public class DetalleJuegoActivity extends AppCompatActivity {
         }
 
         new AlertDialog.Builder(this)
-                .setTitle("💳 Confirmar compra")
+                .setTitle("💶 Confirmar pago con cartera")
                 .setMessage(
                         "🎮 " + juegoActual.getNombre() + "\n" +
                         "────────────────────────\n" +
@@ -217,12 +242,12 @@ public class DetalleJuegoActivity extends AppCompatActivity {
                         "────────────────────────\n" +
                         String.format("Vendedor recibe: €%.2f", precioEur))
                 .setPositiveButton("✅ Confirmar",
-                        (d, w) -> ejecutarCompraEuro(precioEur, precioCK, ckBonus))
+                        (d, w) -> ejecutarCompraCartera(precioEur, precioCK, ckBonus))
                 .setNegativeButton("Cancelar", null)
                 .show();
     }
 
-    private void ejecutarCompraEuro(double precioEur, int precioCK, int ckBonus) {
+    private void ejecutarCompraCartera(double precioEur, int precioCK, int ckBonus) {
         mostrarCargando(true);
         String vendedorId = juegoActual.getPublicadoPor();
         String juegoId    = juegoActual.getId();
@@ -259,12 +284,174 @@ public class DetalleJuegoActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@Nullable DatabaseError e, boolean ok,
                                            @Nullable DataSnapshot snap) {
-                        // 3. Pagar € + bonus CK al vendedor, luego registrar compra
                         pagarVendedor(vendedorId, precioEur, ckBonus, () ->
                                 registrarCompra(juegoId, precioEur, ckBonus,
-                                        vendedorId, eurAntes));
+                                        vendedorId, eurAntes, false));
                     }
                 });
+            }
+        });
+    }
+
+    // ── Compra con tarjeta (simulada) ─────────────────────────────────────
+
+    private void mostrarFormularioTarjeta(double precioEur, int precioCK, int ckBonus) {
+        View formView = LayoutInflater.from(this)
+                .inflate(R.layout.dialog_tarjeta, null);
+
+        TextInputEditText etNum     = formView.findViewById(R.id.etNumTarjeta);
+        TextInputEditText etExp     = formView.findViewById(R.id.etCaducidad);
+        TextInputEditText etCvv     = formView.findViewById(R.id.etCvv);
+        TextInputEditText etNombre  = formView.findViewById(R.id.etNombreTitular);
+        TextInputLayout   tilNum    = formView.findViewById(R.id.tilNumTarjeta);
+        TextInputLayout   tilExp    = formView.findViewById(R.id.tilCaducidad);
+        TextInputLayout   tilCvv    = formView.findViewById(R.id.tilCvv);
+        TextInputLayout   tilNombre = formView.findViewById(R.id.tilNombreTitular);
+        TextView          tvNumPrev = formView.findViewById(R.id.tvCardNumPreview);
+        TextView          tvExpPrev = formView.findViewById(R.id.tvCardExpPreview);
+        TextView          tvNomPrev = formView.findViewById(R.id.tvCardNombrePreview);
+
+        // Auto-formateo número: espacio cada 4 dígitos
+        etNum.addTextChangedListener(new TextWatcher() {
+            private boolean editing = false;
+            @Override public void beforeTextChanged(CharSequence s, int st, int c, int a) {}
+            @Override public void afterTextChanged(Editable s) {}
+            @Override
+            public void onTextChanged(CharSequence s, int st, int b, int c) {
+                if (editing) return;
+                editing = true;
+                String digits = s.toString().replace(" ", "");
+                if (digits.length() > 16) digits = digits.substring(0, 16);
+                StringBuilder fmt = new StringBuilder();
+                for (int i = 0; i < digits.length(); i++) {
+                    if (i > 0 && i % 4 == 0) fmt.append(' ');
+                    fmt.append(digits.charAt(i));
+                }
+                etNum.setText(fmt.toString());
+                etNum.setSelection(fmt.length());
+                String preview = fmt.toString().isEmpty() ? "•••• •••• •••• ••••" : fmt.toString();
+                tvNumPrev.setText(preview);
+                editing = false;
+            }
+        });
+
+        // Auto-formateo caducidad: auto-slash MM/AA
+        etExp.addTextChangedListener(new TextWatcher() {
+            private boolean editing = false;
+            @Override public void beforeTextChanged(CharSequence s, int st, int c, int a) {}
+            @Override public void afterTextChanged(Editable s) {}
+            @Override
+            public void onTextChanged(CharSequence s, int st, int b, int c) {
+                if (editing) return;
+                editing = true;
+                String digits = s.toString().replace("/", "");
+                if (digits.length() > 4) digits = digits.substring(0, 4);
+                String fmt = digits.length() > 2
+                        ? digits.substring(0, 2) + "/" + digits.substring(2)
+                        : digits;
+                etExp.setText(fmt);
+                etExp.setSelection(fmt.length());
+                tvExpPrev.setText(fmt.isEmpty() ? "MM/AA" : fmt);
+                editing = false;
+            }
+        });
+
+        // Nombre → mayúsculas en el preview
+        etNombre.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int st, int c, int a) {}
+            @Override public void afterTextChanged(Editable s) {}
+            @Override
+            public void onTextChanged(CharSequence s, int st, int b, int c) {
+                String up = s.toString().toUpperCase();
+                tvNomPrev.setText(up.isEmpty() ? "NOMBRE TITULAR" : up);
+            }
+        });
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle(String.format("💳 Pagar €%.2f con tarjeta", precioEur))
+                .setView(formView)
+                .setPositiveButton("Pagar ahora", null)   // null → sin auto-dismiss
+                .setNegativeButton("Cancelar", null)
+                .create();
+
+        dialog.setOnShowListener(dlg -> {
+            Button btnPagar = ((AlertDialog) dlg).getButton(AlertDialog.BUTTON_POSITIVE);
+            btnPagar.setOnClickListener(v -> {
+                // Limpiar errores previos
+                tilNum.setError(null);
+                tilExp.setError(null);
+                tilCvv.setError(null);
+                tilNombre.setError(null);
+
+                String numRaw = etNum.getText()    != null ? etNum.getText().toString().replace(" ", "") : "";
+                String expStr = etExp.getText()    != null ? etExp.getText().toString()  : "";
+                String cvvStr = etCvv.getText()    != null ? etCvv.getText().toString()  : "";
+                String nomStr = etNombre.getText() != null ? etNombre.getText().toString() : "";
+
+                boolean ok = true;
+                if (numRaw.length() != 16) {
+                    tilNum.setError("Introduce 16 dígitos");
+                    ok = false;
+                }
+                if (!expStr.matches("\\d{2}/\\d{2}")) {
+                    tilExp.setError("Formato MM/AA");
+                    ok = false;
+                }
+                if (cvvStr.length() != 3) {
+                    tilCvv.setError("3 dígitos");
+                    ok = false;
+                }
+                if (nomStr.trim().isEmpty()) {
+                    tilNombre.setError("Introduce el nombre del titular");
+                    ok = false;
+                }
+
+                if (ok) {
+                    dialog.dismiss();
+                    simularProcesandoPago(precioEur, precioCK, ckBonus);
+                }
+            });
+        });
+
+        dialog.show();
+    }
+
+    private void simularProcesandoPago(double precioEur, int precioCK, int ckBonus) {
+        AlertDialog procesando = new AlertDialog.Builder(this)
+                .setTitle("⏳ Procesando pago...")
+                .setMessage(String.format(
+                        "Conectando con la pasarela de pago...\n\n💳 Cargo: €%.2f", precioEur))
+                .setCancelable(false)
+                .create();
+        procesando.show();
+
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            procesando.dismiss();
+            ejecutarCompraTarjeta(precioEur, precioCK, ckBonus);
+        }, 2000);
+    }
+
+    private void ejecutarCompraTarjeta(double precioEur, int precioCK, int ckBonus) {
+        mostrarCargando(true);
+        String vendedorId = juegoActual.getPublicadoPor();
+        String juegoId    = juegoActual.getId();
+        double eurAntes   = saldoEur;   // la cartera no cambia
+
+        // Con tarjeta: solo dar bonus CK al comprador y pagar al vendedor (sin descontar cartera)
+        dbUsuarios.child(uid).child("saldo").runTransaction(new Transaction.Handler() {
+            @NonNull @Override
+            public Transaction.Result doTransaction(@NonNull MutableData data) {
+                Double s = data.getValue(Double.class);
+                if (s == null) s = 0.0;
+                data.setValue(s + ckBonus);
+                return Transaction.success(data);
+            }
+            @Override
+            public void onComplete(@Nullable DatabaseError e, boolean ok,
+                                   @Nullable DataSnapshot snap) {
+                pagarVendedor(vendedorId, precioEur, ckBonus, () ->
+                        registrarCompra(juegoId, precioEur, ckBonus,
+                                vendedorId, eurAntes, true));
             }
         });
     }
@@ -273,14 +460,13 @@ public class DetalleJuegoActivity extends AppCompatActivity {
 
     interface Callback { void run(); }
 
-    /** Acredita € y bonus CK al vendedor. Siempre paga en euros. */
+    /** Acredita € y bonus CK al vendedor. */
     private void pagarVendedor(String vendedorId, double precioEur, int ckBonus,
                                 Callback callback) {
         if (vendedorId == null || vendedorId.isEmpty() || vendedorId.equals(uid)) {
             callback.run();
             return;
         }
-        // Pagar € al vendedor
         dbUsuarios.child(vendedorId).child("dinero").runTransaction(new Transaction.Handler() {
             @NonNull @Override
             public Transaction.Result doTransaction(@NonNull MutableData data) {
@@ -292,7 +478,6 @@ public class DetalleJuegoActivity extends AppCompatActivity {
             @Override
             public void onComplete(@Nullable DatabaseError e, boolean ok,
                                    @Nullable DataSnapshot snap) {
-                // Dar bonus CK al vendedor también
                 dbUsuarios.child(vendedorId).child("saldo").runTransaction(
                         new Transaction.Handler() {
                     @NonNull @Override
@@ -315,17 +500,15 @@ public class DetalleJuegoActivity extends AppCompatActivity {
     // ── Registrar compra ──────────────────────────────────────────────────
 
     private void registrarCompra(String juegoId, double precioEur, int ckBonus,
-                                  String vendedorId, double eurAntes) {
-        // Añadir a biblioteca del comprador
+                                  String vendedorId, double eurAntes, boolean conTarjeta) {
         dbUsuarios.child(uid).child("biblioteca").child(juegoId).setValue(true);
 
-        // Registrar historial
         String compraId = dbUsuarios.child(uid).child("compras").push().getKey();
         if (compraId != null) {
             java.util.HashMap<String, Object> c = new java.util.HashMap<>();
             c.put("juegoId", juegoId);
             c.put("nombre", juegoActual.getNombre());
-            c.put("metodoPago", "euro");
+            c.put("metodoPago", conTarjeta ? "tarjeta" : "cartera");
             c.put("precioEur", precioEur);
             c.put("precioCK", (int) juegoActual.getPrecio());
             c.put("ckBonus", ckBonus);
@@ -333,12 +516,10 @@ public class DetalleJuegoActivity extends AppCompatActivity {
             dbUsuarios.child(uid).child("compras").child(compraId).setValue(c);
         }
 
-        // Quitar de la sección enVenta del vendedor
         if (vendedorId != null && !vendedorId.isEmpty()) {
             dbUsuarios.child(vendedorId).child("enVenta").child(juegoId).removeValue();
         }
 
-        // Transferir propiedad al comprador
         java.util.HashMap<String, Object> upd = new java.util.HashMap<>();
         upd.put("disponible", false);
         upd.put("publicadoPor", uid);
@@ -346,16 +527,23 @@ public class DetalleJuegoActivity extends AppCompatActivity {
         dbJuegos.child(juegoId).updateChildren(upd);
 
         mostrarCargando(false);
-        mostrarRecibo(precioEur, ckBonus, eurAntes);
+        mostrarRecibo(precioEur, ckBonus, eurAntes, conTarjeta);
     }
 
-    private void mostrarRecibo(double precioEur, int ckBonus, double eurAntes) {
-        String resumen = String.format(
-                "💳 Pagado:          €%.2f\n" +
-                "🎁 Tu bonus CK:    +%d CK\n" +
-                "🎁 Bonus vendedor: +%d CK\n" +
-                "💶 Euros ahora:    €%.2f",
-                precioEur, ckBonus, ckBonus, eurAntes - precioEur);
+    private void mostrarRecibo(double precioEur, int ckBonus, double eurAntes,
+                                boolean conTarjeta) {
+        String metodo    = conTarjeta ? "💳 Tarjeta bancaria" : "💶 Cartera de la app";
+        String lineaPago = conTarjeta
+                ? String.format("💳 Cargado en tarjeta: €%.2f\n", precioEur)
+                : String.format("💳 Pagado:             €%.2f\n" +
+                                "💶 Cartera restante:  €%.2f\n",
+                                precioEur, eurAntes - precioEur);
+
+        String resumen =
+                "Método:            " + metodo + "\n" +
+                lineaPago +
+                "🎁 Tu bonus CK:    +" + ckBonus + " CK\n" +
+                "🎁 Bonus vendedor: +" + ckBonus + " CK";
 
         new AlertDialog.Builder(this)
                 .setTitle("✅ ¡Compra completada!")

@@ -11,7 +11,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -20,18 +19,16 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.MutableData;
-import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class BibliotecaActivity extends AppCompatActivity {
 
@@ -127,7 +124,6 @@ public class BibliotecaActivity extends AppCompatActivity {
         tvSaldo            = findViewById(R.id.tvSaldoBiblioteca);
         tvDinero           = findViewById(R.id.tvDineroBiblioteca);
         tvContador         = findViewById(R.id.tvContadorEnVenta);
-        MaterialButton btnAnadirDinero = findViewById(R.id.btnAnadirDinero);
 
         // Adapter biblioteca (grid 2 col)
         adapterBiblioteca = new VideojuegoAdapter(juegosComprados, juego -> {
@@ -135,6 +131,7 @@ public class BibliotecaActivity extends AppCompatActivity {
             i.putExtra(DetalleJuegoActivity.EXTRA_JUEGO_ID, juego.getId());
             startActivity(i);
         });
+        adapterBiblioteca.setOnCodigoClickListener(this::mostrarCodigo);
         recyclerBiblioteca.setLayoutManager(new GridLayoutManager(this, 2));
         recyclerBiblioteca.setAdapter(adapterBiblioteca);
         recyclerBiblioteca.setNestedScrollingEnabled(false);
@@ -145,58 +142,10 @@ public class BibliotecaActivity extends AppCompatActivity {
         recyclerEnVenta.setAdapter(adapterEnVenta);
         recyclerEnVenta.setNestedScrollingEnabled(false);
 
-        btnAnadirDinero.setOnClickListener(v -> mostrarDialogoDeposito());
-
         configurarBottomNav();
         cargarBalances();
         cargarBiblioteca();
         cargarEnVenta();
-    }
-
-    // ── Depósito de dinero ────────────────────────────────────────────────
-
-    private void mostrarDialogoDeposito() {
-        final double[] montos   = { 5.0, 10.0, 25.0, 50.0, 100.0 };
-        final String[] opciones = {
-                "💶  €5.00",
-                "💶  €10.00",
-                "💶  €25.00",
-                "💶  €50.00",
-                "💶  €100.00"
-        };
-
-        new AlertDialog.Builder(this)
-                .setTitle("💳 Añadir dinero")
-                .setMessage("Selecciona el importe que quieres añadir a tu saldo:")
-                .setItems(opciones, (dialog, which) -> ejecutarDeposito(montos[which]))
-                .setNegativeButton("Cancelar", null)
-                .show();
-    }
-
-    private void ejecutarDeposito(double importe) {
-        dbUsuarios.child(uid).child("dinero").runTransaction(new Transaction.Handler() {
-            @NonNull @Override
-            public Transaction.Result doTransaction(@NonNull MutableData data) {
-                Double d = data.getValue(Double.class);
-                if (d == null) d = 0.0;
-                data.setValue(Math.round((d + importe) * 100.0) / 100.0);
-                return Transaction.success(data);
-            }
-            @Override
-            public void onComplete(@Nullable DatabaseError error, boolean committed,
-                                   @Nullable DataSnapshot snapshot) {
-                runOnUiThread(() -> {
-                    if (committed) {
-                        Toast.makeText(BibliotecaActivity.this,
-                                String.format("✅ €%.2f añadidos a tu saldo", importe),
-                                Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(BibliotecaActivity.this,
-                                "Error al añadir dinero", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-        });
     }
 
     // ── Navegación ────────────────────────────────────────────────────────
@@ -312,6 +261,60 @@ public class BibliotecaActivity extends AppCompatActivity {
             }
             @Override public void onCancelled(@NonNull DatabaseError error) {}
         });
+    }
+
+    // ── Código de activación ──────────────────────────────────────────────
+
+    private void mostrarCodigo(Videojuego juego) {
+        String juegoId = juego.getId();
+        dbUsuarios.child(uid).child("codigos").child(juegoId)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        String codigo;
+                        if (snapshot.exists() && snapshot.getValue(String.class) != null) {
+                            codigo = snapshot.getValue(String.class);
+                        } else {
+                            codigo = generarCodigo();
+                            dbUsuarios.child(uid).child("codigos").child(juegoId).setValue(codigo);
+                        }
+                        mostrarDialogoCodigo(juego.getNombre() != null ? juego.getNombre() : "?", codigo);
+                    }
+                    @Override public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(BibliotecaActivity.this,
+                                "Error al obtener código", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private String generarCodigo() {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        Random random = new Random();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 16; i++) {
+            if (i > 0 && i % 4 == 0) sb.append('-');
+            sb.append(chars.charAt(random.nextInt(chars.length())));
+        }
+        return sb.toString(); // ejemplo: A3BX-9KPM-2YHD-7WQN
+    }
+
+    private void mostrarDialogoCodigo(String nombre, String codigo) {
+        new AlertDialog.Builder(this)
+                .setTitle("🔑 Código de activación")
+                .setMessage("🎮 " + nombre + "\n\n" +
+                        "Tu código de activación:\n\n" +
+                        "  " + codigo + "\n\n" +
+                        "Guarda este código en un lugar seguro.\n" +
+                        "Es único para este juego en tu cuenta.")
+                .setPositiveButton("📋 Copiar", (d, w) -> {
+                    android.content.ClipboardManager cm =
+                            (android.content.ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                    cm.setPrimaryClip(
+                            android.content.ClipData.newPlainText("Código", codigo));
+                    Toast.makeText(this, "✅ Código copiado", Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("Cerrar", null)
+                .show();
     }
 
     private double safeD(DataSnapshot ds) {

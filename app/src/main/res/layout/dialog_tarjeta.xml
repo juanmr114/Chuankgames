@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- ── Vista previa de la tarjeta ── -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="118dp"
+            android:layout_marginBottom="18dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="8dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_tarjeta_preview"
+                android:orientation="vertical"
+                android:padding="14dp">
+
+                <!-- Fila: chip + VISA -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="💳"
+                        android:textSize="18sp" />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:layout_weight="1" />
+
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@mipmap/ic_launcher"
+                        android:scaleType="fitCenter"
+                        android:alpha="0.9" />
+                </LinearLayout>
+
+                <!-- Número de tarjeta -->
+                <TextView
+                    android:id="@+id/tvCardNumPreview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="•••• •••• •••• ••••"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="15sp"
+                    android:letterSpacing="0.15"
+                    android:fontFamily="monospace" />
+
+                <!-- Nombre + Caducidad -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="8dp">
+
+                    <TextView
+                        android:id="@+id/tvCardNombrePreview"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="NOMBRE TITULAR"
+                        android:textColor="#FFFFFFFF"
+                        android:textSize="10sp"
+                        android:alpha="0.8"
+                        android:maxLines="1"
+                        android:ellipsize="end" />
+
+                    <TextView
+                        android:id="@+id/tvCardExpPreview"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="MM/AA"
+                        android:textColor="#FFFFFFFF"
+                        android:textSize="10sp"
+                        android:alpha="0.8" />
+                </LinearLayout>
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- ── Número de tarjeta ── -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilNumTarjeta"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:hint="Número de tarjeta"
+            app:boxStrokeColor="@color/secundario"
+            app:hintTextColor="@color/secundario">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etNumTarjeta"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:maxLength="19"
+                android:textColor="@color/white" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- ── Caducidad + CVV en la misma fila ── -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="10dp">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilCaducidad"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:hint="MM/AA"
+                app:boxStrokeColor="@color/secundario"
+                app:hintTextColor="@color/secundario">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etCaducidad"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:maxLength="5"
+                    android:textColor="@color/white" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilCvv"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="CVV"
+                app:boxStrokeColor="@color/secundario"
+                app:hintTextColor="@color/secundario">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etCvv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberPassword"
+                    android:maxLength="3"
+                    android:textColor="@color/white" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
+        <!-- ── Nombre del titular ── -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilNombreTitular"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="14dp"
+            android:hint="Nombre del titular"
+            app:boxStrokeColor="@color/secundario"
+            app:hintTextColor="@color/secundario">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etNombreTitular"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textCapCharacters"
+                android:maxLength="26"
+                android:textColor="@color/white" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- ── Aviso seguridad ── -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🔒 Transacción simulada · Ningún dato real se transmite"
+            android:textColor="@color/texto_hint"
+            android:textSize="10sp"
+            android:gravity="center" />
+
+    </LinearLayout>
+</ScrollView>

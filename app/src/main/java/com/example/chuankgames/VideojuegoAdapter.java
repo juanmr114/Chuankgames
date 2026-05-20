@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.google.android.material.button.MaterialButton;
 
 import java.util.List;
 
@@ -20,12 +21,21 @@ public class VideojuegoAdapter extends RecyclerView.Adapter<VideojuegoAdapter.Vi
         void onItemClick(Videojuego videojuego);
     }
 
-    private final List<Videojuego> lista;
+    public interface OnCodigoClickListener {
+        void onCodigoClick(Videojuego videojuego);
+    }
+
+    private final List<Videojuego>  lista;
     private final OnItemClickListener listener;
+    private OnCodigoClickListener codigoListener;
 
     public VideojuegoAdapter(List<Videojuego> lista, OnItemClickListener listener) {
-        this.lista = lista;
+        this.lista    = lista;
         this.listener = listener;
+    }
+
+    public void setOnCodigoClickListener(OnCodigoClickListener l) {
+        this.codigoListener = l;
     }
 
     @NonNull
@@ -43,9 +53,8 @@ public class VideojuegoAdapter extends RecyclerView.Adapter<VideojuegoAdapter.Vi
         holder.tvNombre.setText(juego.getNombre());
         holder.tvGenero.setText(juego.getGenero());
         holder.tvDescripcion.setText(juego.getDescripcion());
-        holder.tvPrecio.setText("⚡ " + (int) juego.getPrecio() + " CK");
+        holder.tvPrecio.setText(String.format("💶 €%.2f", juego.getPrecioEuros()));
 
-        // Cargar imagen desde Firebase Storage con Glide
         if (juego.getImagenUrl() != null && !juego.getImagenUrl().isEmpty()) {
             Glide.with(holder.imgJuego.getContext())
                     .load(juego.getImagenUrl())
@@ -58,6 +67,14 @@ public class VideojuegoAdapter extends RecyclerView.Adapter<VideojuegoAdapter.Vi
         }
 
         holder.itemView.setOnClickListener(v -> listener.onItemClick(juego));
+
+        // Botón "Ver código" — visible solo en la biblioteca
+        if (codigoListener != null) {
+            holder.btnCodigo.setVisibility(View.VISIBLE);
+            holder.btnCodigo.setOnClickListener(v -> codigoListener.onCodigoClick(juego));
+        } else {
+            holder.btnCodigo.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -66,19 +83,17 @@ public class VideojuegoAdapter extends RecyclerView.Adapter<VideojuegoAdapter.Vi
     }
 
     public void actualizarLista(List<Videojuego> nuevaLista) {
-        // Si la lista interna y nuevaLista son el mismo objeto (misma referencia),
-        // NO hacemos .clear() porque borraríamos los datos que acaba de traer Firebase.
         if (this.lista != nuevaLista) {
             this.lista.clear();
             this.lista.addAll(nuevaLista);
         }
-        // Esto es lo que realmente hace que los juegos aparezcan en pantalla
         notifyDataSetChanged();
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView imgJuego;
-        TextView tvNombre, tvGenero, tvDescripcion, tvPrecio;
+        ImageView      imgJuego;
+        TextView       tvNombre, tvGenero, tvDescripcion, tvPrecio;
+        MaterialButton btnCodigo;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -87,6 +102,7 @@ public class VideojuegoAdapter extends RecyclerView.Adapter<VideojuegoAdapter.Vi
             tvGenero      = itemView.findViewById(R.id.tvGeneroJuego);
             tvDescripcion = itemView.findViewById(R.id.tvDescripcionJuego);
             tvPrecio      = itemView.findViewById(R.id.tvPrecioJuego);
+            btnCodigo     = itemView.findViewById(R.id.btnVerCodigo);
         }
     }
 }

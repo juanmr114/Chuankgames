@@ -86,6 +86,21 @@
                 android:textSize="11sp"
                 android:textStyle="bold" />
 
+            <!-- Botón código de activación (solo visible en Biblioteca) -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnVerCodigo"
+                android:layout_width="match_parent"
+                android:layout_height="32dp"
+                android:layout_marginTop="7dp"
+                android:text="🔑 Ver código"
+                android:textColor="@color/principal"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:backgroundTint="@color/secundario"
+                android:paddingVertical="0dp"
+                app:cornerRadius="16dp"
+                android:visibility="gone" />
+
         </LinearLayout>
     </LinearLayout>
 

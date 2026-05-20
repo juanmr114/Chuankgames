@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/bg_degradado">
 
-    <!-- Header bar con botón volver -->
+    <!-- Header bar (sin botón volver — está abajo) -->
     <LinearLayout
         android:id="@+id/headerDetalle"
         android:layout_width="0dp"
@@ -18,22 +18,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <ImageButton
-            android:id="@+id/btnVolverDetalle"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@android:drawable/ic_menu_revert"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:tint="@color/secundario"
-            android:padding="10dp"
-            android:contentDescription="Volver" />
-
         <TextView
             android:id="@+id/tvHeaderNombre"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="8dp"
             android:textColor="@color/white"
             android:textSize="15sp"
             android:textStyle="bold"
@@ -59,7 +50,7 @@
         android:layout_height="0dp"
         android:background="@android:color/transparent"
         app:layout_constraintTop_toBottomOf="@id/headerDetalle"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/btnVolverDetalle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
@@ -158,7 +149,7 @@
 
                     </LinearLayout>
 
-                    <!-- Bonus CK al pagar con € -->
+                    <!-- Bonus CK -->
                     <TextView
                         android:id="@+id/tvCKReward"
                         android:layout_width="wrap_content"
@@ -215,5 +206,25 @@
             </LinearLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
+
+    <!-- Botón VOLVER fijo en la parte inferior (fácil de pulsar) -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnVolverDetalle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="16dp"
+        android:text="← Volver"
+        android:textColor="@color/secundario"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:backgroundTint="@color/card_dark"
+        android:paddingVertical="14dp"
+        app:cornerRadius="28dp"
+        app:strokeColor="@color/secundario"
+        app:strokeWidth="1dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

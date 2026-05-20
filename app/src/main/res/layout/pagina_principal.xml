@@ -47,10 +47,10 @@
         <!-- Logo -->
         <ImageView
             android:id="@+id/ivLogoPrincipal"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
             android:layout_marginTop="10dp"
-            android:scaleType="centerCrop"
+            android:scaleType="fitCenter"
             android:src="@mipmap/ic_launcher"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -91,14 +91,60 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
+        <!-- ── Filtro por género ── -->
+        <HorizontalScrollView
+            android:id="@+id/scrollFiltroGenero"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:scrollbars="none"
+            android:fadingEdgeLength="16dp"
+            android:requiresFadingEdge="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/etBuscar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <LinearLayout
+                android:id="@+id/layoutChipsGenero"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="4dp" />
+
+        </HorizontalScrollView>
+
+        <!-- ── Filtro por precio ── -->
+        <HorizontalScrollView
+            android:id="@+id/scrollFiltroPrecio"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:scrollbars="none"
+            android:fadingEdgeLength="16dp"
+            android:requiresFadingEdge="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/scrollFiltroGenero"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <LinearLayout
+                android:id="@+id/layoutChipsPrecio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="4dp" />
+
+        </HorizontalScrollView>
+
         <!-- Scroll con las dos secciones -->
         <androidx.core.widget.NestedScrollView
             android:id="@+id/scrollContenido"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="4dp"
             android:clipToPadding="false"
-            app:layout_constraintTop_toBottomOf="@id/etBuscar"
+            app:layout_constraintTop_toBottomOf="@id/scrollFiltroPrecio"
             app:layout_constraintBottom_toTopOf="@id/lineaSeparadora"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
