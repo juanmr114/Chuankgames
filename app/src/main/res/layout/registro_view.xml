@@ -124,6 +124,7 @@
 
                 <!-- Campo Contraseña -->
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilPassword"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -135,6 +136,8 @@
                     app:endIconTint="@color/secundario"
                     app:boxStrokeColor="@color/secundario"
                     app:hintTextColor="@color/texto_hint"
+                    app:helperText="Mín. 8 caracteres, 1 mayúscula, 1 número y 1 símbolo"
+                    app:helperTextTextColor="@color/texto_hint"
                     app:boxCornerRadiusTopStart="12dp"
                     app:boxCornerRadiusTopEnd="12dp"
                     app:boxCornerRadiusBottomStart="12dp"
@@ -151,6 +154,7 @@
 
                 <!-- Campo Confirmar contraseña -->
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilConfirmarPassword"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
