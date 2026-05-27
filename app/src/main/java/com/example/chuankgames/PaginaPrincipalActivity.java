@@ -100,6 +100,22 @@ public class PaginaPrincipalActivity extends AppCompatActivity
         tvEmptyPropios       = findViewById(R.id.tvEmptyPropios);
         layoutChipsGenero    = findViewById(R.id.layoutChipsGenero);
         layoutChipsPrecio    = findViewById(R.id.layoutChipsPrecio);
+
+        // Botón cerrar sesión (esquina superior derecha)
+        findViewById(R.id.btnCerrarSesion).setOnClickListener(v ->
+                new AlertDialog.Builder(this)
+                        .setTitle("👋 ¡Hasta luego!")
+                        .setMessage("Gracias Oscar")
+                        .setPositiveButton("Salir", (d, w) -> {
+                            FirebaseAuth.getInstance().signOut();
+                            Intent intent = new Intent(this, MainActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);
+                            finish();
+                        })
+                        .setNegativeButton("Cancelar", null)
+                        .show()
+        );
     }
 
     // ── Filtros ───────────────────────────────────────────────────────────

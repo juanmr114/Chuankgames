@@ -58,7 +58,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                android:text="⚡ 200 CK por tirada"
+                android:text="⚡ 100 CK por tirada"
                 android:textColor="@color/texto_hint"
                 android:textSize="12sp"
                 android:gravity="center" />

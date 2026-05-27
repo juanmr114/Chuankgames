@@ -25,12 +25,12 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <!-- Chip saldo (top-right, clickable → Tienda) -->
+        <!-- Chip saldo (top-right, clickable → Ruleta) -->
         <TextView
             android:id="@+id/tvSaldoPrincipal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="14dp"
             android:layout_marginEnd="14dp"
             android:text="⚡ 0 CK"
             android:textColor="@color/principal"
@@ -42,6 +42,22 @@
             android:clickable="true"
             android:focusable="true"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Botón cerrar sesión — icono apagar (top-right, debajo del chip de saldo) -->
+        <ImageView
+            android:id="@+id/btnCerrarSesion"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="18dp"
+            android:src="@android:drawable/ic_lock_power_off"
+            android:tint="#FF5555"
+            android:padding="4dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:layout_constraintTop_toBottomOf="@id/tvSaldoPrincipal"
             app:layout_constraintEnd_toEndOf="parent" />
 
         <!-- Logo -->

@@ -32,7 +32,7 @@ import java.util.Random;
 public class RuletaActivity extends AppCompatActivity {
 
     // Coste por tirada
-    private static final int COSTE_CK = 200;
+    private static final int COSTE_CK = 100;
 
     // Premios  |  probabilidad acumulada 0-100  |  emojis de cada tier
     private static final double[] PREMIOS_EUR = {  0.50,  1.00,  3.00,  10.00,  20.00,  30.00 };

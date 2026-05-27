@@ -231,7 +231,7 @@ public class DetalleJuegoActivity extends AppCompatActivity {
     private void mostrarEleccionPago() {
         double precioEur = juegoActual.getPrecioEuros();
         int    precioCK  = (int) juegoActual.getPrecio();
-        int    ckBonus   = Math.max(1, precioCK / 10);
+        int    ckBonus   = Math.max(1, (int)(precioEur * 100));  // igual que lo mostrado
 
         String[] opciones = {
             "💳  Tarjeta bancaria",
