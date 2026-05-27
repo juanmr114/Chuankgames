@@ -153,9 +153,13 @@ public class DetalleJuegoActivity extends AppCompatActivity {
         tvHeaderNombre.setText(nombre);
         tvNombre.setText(nombre);
         tvGenero.setText("🎮 " + (juegoActual.getGenero() != null ? juegoActual.getGenero() : ""));
-        String vendedor = juegoActual.getNombreVendedor() != null
-                ? juegoActual.getNombreVendedor() : "Desconocido";
-        tvVendedor.setText("👤 " + vendedor);
+
+        // Mostrar nombre del vendedor: primero lo que viene en el objeto,
+        // y siempre lo refrescamos consultando Firebase con el UID real
+        String nombreGuardado = juegoActual.getNombreVendedor();
+        tvVendedor.setText("👤 " + (nombreGuardado != null && !nombreGuardado.isEmpty()
+                ? nombreGuardado : "Cargando..."));
+        cargarNombreVendedor();
         tvDescripcion.setText(juegoActual.getDescripcion() != null ? juegoActual.getDescripcion() : "");
 
         int    ck      = (int) juegoActual.getPrecio();
@@ -178,6 +182,36 @@ public class DetalleJuegoActivity extends AppCompatActivity {
             btnComprarEuro.setText("❌ No disponible");
             tvCKReward.setVisibility(View.GONE);
         }
+    }
+
+    /** Consulta el nombre del vendedor en usuarios/{uid}/nombre y lo muestra en tvVendedor. */
+    private void cargarNombreVendedor() {
+        String vendedorId = juegoActual.getPublicadoPor();
+        if (vendedorId == null || vendedorId.isEmpty()) {
+            tvVendedor.setText("👤 Desconocido");
+            return;
+        }
+        dbUsuarios.child(vendedorId).child("nombre")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        String nombre = snapshot.exists() ? snapshot.getValue(String.class) : null;
+                        if (nombre != null && !nombre.isEmpty()) {
+                            tvVendedor.setText("👤 " + nombre);
+                            // Actualiza el campo en Firebase para futuras cargas rápidas
+                            if (juegoActual.getNombreVendedor() == null
+                                    || juegoActual.getNombreVendedor().isEmpty()) {
+                                dbJuegos.child(juegoActual.getId())
+                                        .child("nombreVendedor").setValue(nombre);
+                            }
+                        } else {
+                            tvVendedor.setText("👤 Usuario");
+                        }
+                    }
+                    @Override public void onCancelled(@NonNull DatabaseError error) {
+                        tvVendedor.setText("👤 Usuario");
+                    }
+                });
     }
 
     private void actualizarBotones() {

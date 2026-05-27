@@ -113,7 +113,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="number"
                 android:maxLength="19"
-                android:textColor="@color/white" />
+                android:textColor="#000000" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- ── Caducidad + CVV en la misma fila ── -->
@@ -140,7 +140,7 @@
                     android:layout_height="wrap_content"
                     android:inputType="number"
                     android:maxLength="5"
-                    android:textColor="@color/white" />
+                    android:textColor="#000000" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -159,7 +159,7 @@
                     android:layout_height="wrap_content"
                     android:inputType="numberPassword"
                     android:maxLength="3"
-                    android:textColor="@color/white" />
+                    android:textColor="#000000" />
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
 
@@ -180,7 +180,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="textCapCharacters"
                 android:maxLength="26"
-                android:textColor="@color/white" />
+                android:textColor="#000000" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- ── Aviso seguridad ── -->

@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -375,8 +376,20 @@ public class PaginaPrincipalActivity extends AppCompatActivity
         } else if (id == R.id.lateral_ajustes) {
             Toast.makeText(this, "Ajustes (próximamente)", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.lateral_cerrar_sesion) {
-            FirebaseAuth.getInstance().signOut();
-            finish();
+            drawerLayout.closeDrawer(GravityCompat.START);
+            new AlertDialog.Builder(this)
+                    .setTitle("👋 ¡Hasta luego!")
+                    .setMessage("Gracias Oscar")
+                    .setPositiveButton("Salir", (d, w) -> {
+                        FirebaseAuth.getInstance().signOut();
+                        Intent intent = new Intent(this, MainActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                        finish();
+                    })
+                    .setNegativeButton("Cancelar", null)
+                    .show();
+            return true;
         }
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
