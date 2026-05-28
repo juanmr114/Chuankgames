@@ -41,7 +41,7 @@ public class DetalleJuegoActivity extends AppCompatActivity {
     private TextView       tvHeaderNombre, tvSaldoDetalle;
     private ImageView      ivPortada;
     private TextView       tvNombre, tvGenero, tvVendedor, tvDescripcion;
-    private TextView       tvPrecio, tvPrecioEuro, tvCKReward;
+    private TextView       tvPrecio, tvPrecioEuro, tvCKReward, tvPlataforma;
     private MaterialButton btnComprarEuro, btnRevender;
     private ProgressBar    progressBar;
 
@@ -77,6 +77,7 @@ public class DetalleJuegoActivity extends AppCompatActivity {
         tvPrecio       = findViewById(R.id.tvDetallePrecio);
         tvPrecioEuro   = findViewById(R.id.tvDetallePrecioEuro);
         tvCKReward     = findViewById(R.id.tvCKReward);
+        tvPlataforma   = findViewById(R.id.tvDetallePlataforma);
         btnComprarEuro = findViewById(R.id.btnComprarEuro);
         btnRevender    = findViewById(R.id.btnRevender);
         progressBar    = findViewById(R.id.progressDetalle);
@@ -152,14 +153,27 @@ public class DetalleJuegoActivity extends AppCompatActivity {
         String nombre = juegoActual.getNombre() != null ? juegoActual.getNombre() : "";
         tvHeaderNombre.setText(nombre);
         tvNombre.setText(nombre);
-        tvGenero.setText("🎮 " + (juegoActual.getGenero() != null ? juegoActual.getGenero() : ""));
 
-        // Mostrar nombre del vendedor: primero lo que viene en el objeto,
-        // y siempre lo refrescamos consultando Firebase con el UID real
+        // Género + plataforma en el chip del hero
+        String genero     = juegoActual.getGenero()     != null ? juegoActual.getGenero()     : "";
+        String plataforma = juegoActual.getPlataforma() != null ? juegoActual.getPlataforma() : "";
+        String chipTexto  = "🎮 " + genero + (!plataforma.isEmpty() ? "  ·  " + plataforma : "");
+        tvGenero.setText(chipTexto);
+
+        // Nombre del vendedor / propietario
         String nombreGuardado = juegoActual.getNombreVendedor();
-        tvVendedor.setText("👤 " + (nombreGuardado != null && !nombreGuardado.isEmpty()
-                ? nombreGuardado : "Cargando..."));
+        tvVendedor.setText(nombreGuardado != null && !nombreGuardado.isEmpty()
+                ? nombreGuardado : "Cargando...");
         cargarNombreVendedor();
+
+        // Plataforma (chip)
+        String plat = juegoActual.getPlataforma();
+        if (plat != null && !plat.isEmpty()) {
+            tvPlataforma.setText(plat);
+            tvPlataforma.setVisibility(View.VISIBLE);
+        } else {
+            tvPlataforma.setVisibility(View.GONE);
+        }
         tvDescripcion.setText(juegoActual.getDescripcion() != null ? juegoActual.getDescripcion() : "");
 
         int    ck      = (int) juegoActual.getPrecio();
@@ -231,24 +245,56 @@ public class DetalleJuegoActivity extends AppCompatActivity {
     private void mostrarEleccionPago() {
         double precioEur = juegoActual.getPrecioEuros();
         int    precioCK  = (int) juegoActual.getPrecio();
-        int    ckBonus   = Math.max(1, (int)(precioEur * 100));  // igual que lo mostrado
+        int    ckBonus   = Math.max(1, (int)(precioEur * 100));
 
-        String[] opciones = {
-            "💳  Tarjeta bancaria",
-            String.format("💶  Cartera de la app  (€%.2f disponibles)", saldoEur)
-        };
+        android.view.View view = LayoutInflater.from(this)
+                .inflate(R.layout.dialog_metodo_pago, null);
 
-        new AlertDialog.Builder(this)
-                .setTitle(String.format("🏦 Pagar €%.2f — ¿cómo?", precioEur))
-                .setItems(opciones, (dialog, which) -> {
-                    if (which == 0) {
-                        mostrarFormularioTarjeta(precioEur, precioCK, ckBonus);
-                    } else {
-                        confirmarCompraCartera(precioEur, precioCK, ckBonus);
-                    }
-                })
+        // Precio en el chip
+        ((TextView) view.findViewById(R.id.tvPrecioDialog))
+                .setText(String.format("💶  €%.2f", precioEur));
+
+        // Saldo cartera
+        TextView tvSaldo = view.findViewById(R.id.tvSaldoEnDialog);
+        boolean  hayFondos = saldoEur >= precioEur;
+        tvSaldo.setText(String.format("€%.2f disponibles", saldoEur));
+        tvSaldo.setTextColor(getColor(hayFondos ? R.color.verde_bonus : android.R.color.holo_red_light));
+
+        // Si no hay fondos, oscurecer la card de cartera
+        androidx.cardview.widget.CardView cardCartera = view.findViewById(R.id.cardOptCartera);
+        if (!hayFondos) {
+            cardCartera.setAlpha(0.45f);
+            view.findViewById(R.id.tvArrowCartera).setVisibility(android.view.View.GONE);
+        }
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("🏦 Elige cómo pagar")
+                .setView(view)
                 .setNegativeButton("Cancelar", null)
-                .show();
+                .create();
+
+        view.findViewById(R.id.cardOptTarjeta).setOnClickListener(v -> {
+            dialog.dismiss();
+            mostrarFormularioTarjeta(precioEur, precioCK, ckBonus);
+        });
+
+        cardCartera.setOnClickListener(v -> {
+            if (!hayFondos) {
+                new AlertDialog.Builder(this)
+                        .setTitle("❌ Saldo insuficiente")
+                        .setMessage(String.format(
+                                "Necesitas: €%.2f\nTienes:    €%.2f\n\n" +
+                                "Puedes ganar euros en la 🎰 Ruleta.",
+                                precioEur, saldoEur))
+                        .setPositiveButton("Entendido", null)
+                        .show();
+                return;
+            }
+            dialog.dismiss();
+            confirmarCompraCartera(precioEur, precioCK, ckBonus);
+        });
+
+        dialog.show();
     }
 
     // ── Compra con cartera (€ de la app) ─────────────────────────────────
@@ -536,58 +582,112 @@ public class DetalleJuegoActivity extends AppCompatActivity {
 
     private void registrarCompra(String juegoId, double precioEur, int ckBonus,
                                   String vendedorId, double eurAntes, boolean conTarjeta) {
+        // 1. Añadir a biblioteca del comprador
         dbUsuarios.child(uid).child("biblioteca").child(juegoId).setValue(true);
 
+        // 2. Registrar compra
         String compraId = dbUsuarios.child(uid).child("compras").push().getKey();
         if (compraId != null) {
             java.util.HashMap<String, Object> c = new java.util.HashMap<>();
-            c.put("juegoId", juegoId);
-            c.put("nombre", juegoActual.getNombre());
+            c.put("juegoId",    juegoId);
+            c.put("nombre",     juegoActual.getNombre());
             c.put("metodoPago", conTarjeta ? "tarjeta" : "cartera");
-            c.put("precioEur", precioEur);
-            c.put("precioCK", (int) juegoActual.getPrecio());
-            c.put("ckBonus", ckBonus);
-            c.put("fecha", System.currentTimeMillis());
+            c.put("precioEur",  precioEur);
+            c.put("precioCK",   (int) juegoActual.getPrecio());
+            c.put("ckBonus",    ckBonus);
+            c.put("plataforma", juegoActual.getPlataforma());
+            c.put("fecha",      System.currentTimeMillis());
             dbUsuarios.child(uid).child("compras").child(compraId).setValue(c);
         }
 
+        // 3. Quitar del "en venta" del vendedor
         if (vendedorId != null && !vendedorId.isEmpty()) {
             dbUsuarios.child(vendedorId).child("enVenta").child(juegoId).removeValue();
         }
 
+        // 4. Marcar juego como vendido
         java.util.HashMap<String, Object> upd = new java.util.HashMap<>();
-        upd.put("disponible", false);
-        upd.put("publicadoPor", uid);
+        upd.put("disponible",     false);
+        upd.put("publicadoPor",   uid);
         upd.put("nombreVendedor", displayName);
         dbJuegos.child(juegoId).updateChildren(upd);
 
-        mostrarCargando(false);
-        mostrarRecibo(precioEur, ckBonus, eurAntes, conTarjeta);
+        // 5. Leer la clave real y entregarla al comprador
+        dbJuegos.child(juegoId).child("codigoJuego")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        String codigo = snapshot.exists()
+                                ? snapshot.getValue(String.class) : null;
+                        if (codigo != null && !codigo.isEmpty()) {
+                            // Guardar clave en biblioteca del comprador
+                            dbUsuarios.child(uid).child("codigos")
+                                    .child(juegoId).setValue(codigo);
+                            // Eliminar clave del listing público (ya fue vendida)
+                            dbJuegos.child(juegoId).child("codigoJuego").removeValue();
+                        }
+                        mostrarCargando(false);
+                        mostrarRecibo(precioEur, ckBonus, eurAntes, conTarjeta, codigo);
+                    }
+                    @Override public void onCancelled(@NonNull DatabaseError error) {
+                        mostrarCargando(false);
+                        mostrarRecibo(precioEur, ckBonus, eurAntes, conTarjeta, null);
+                    }
+                });
     }
 
     private void mostrarRecibo(double precioEur, int ckBonus, double eurAntes,
-                                boolean conTarjeta) {
+                                boolean conTarjeta, String codigo) {
+        String plataforma = juegoActual.getPlataforma() != null
+                && !juegoActual.getPlataforma().isEmpty()
+                ? juegoActual.getPlataforma() : "—";
+
         String metodo    = conTarjeta ? "💳 Tarjeta bancaria" : "💶 Cartera de la app";
         String lineaPago = conTarjeta
                 ? String.format("💳 Cargado en tarjeta: €%.2f\n", precioEur)
-                : String.format("💳 Pagado:             €%.2f\n" +
-                                "💶 Cartera restante:  €%.2f\n",
+                : String.format("💳 Pagado:             €%.2f\n💶 Cartera restante:  €%.2f\n",
                                 precioEur, eurAntes - precioEur);
 
+        // Sección clave (el activo más importante de la compra)
+        String seccionClave;
+        if (codigo != null && !codigo.isEmpty()) {
+            seccionClave =
+                    "\n━━━━━━━━━━━━━━━━━━━━━━━━━━\n" +
+                    "🔑  TU CLAVE DE ACTIVACIÓN\n" +
+                    "━━━━━━━━━━━━━━━━━━━━━━━━━━\n" +
+                    "  " + codigo + "\n\n" +
+                    "📦 Plataforma: " + plataforma + "\n" +
+                    "También la tienes en 📚 Biblioteca\n" +
+                    "━━━━━━━━━━━━━━━━━━━━━━━━━━";
+        } else {
+            seccionClave = "\n\n📚 El juego ya está en tu Biblioteca.";
+        }
+
         String resumen =
-                "Método:            " + metodo + "\n" +
+                "Método:  " + metodo + "\n" +
                 lineaPago +
-                "🎁 Tu bonus CK:    +" + ckBonus + " CK\n" +
-                "🎁 Bonus vendedor: +" + ckBonus + " CK";
+                "🎁 Bonus CK:  +" + ckBonus + " CK\n" +
+                seccionClave;
 
-        new AlertDialog.Builder(this)
+        AlertDialog recibo = new AlertDialog.Builder(this)
                 .setTitle("✅ ¡Compra completada!")
-                .setMessage("🎮 " + juegoActual.getNombre() + "\n\n" + resumen +
-                        "\n\n📚 El juego ya está en tu Biblioteca.")
-                .setPositiveButton("¡Genial! 🎉", null)
+                .setMessage("🎮 " + juegoActual.getNombre() + "\n\n" + resumen)
                 .setCancelable(false)
-                .show();
+                .setPositiveButton("¡Genial! 🎉", null)
+                .create();
 
+        // Si hay clave, añadir botón "Copiar clave"
+        if (codigo != null && !codigo.isEmpty()) {
+            final String codigoCopy = codigo;
+            recibo.setButton(AlertDialog.BUTTON_NEUTRAL, "📋 Copiar clave", (d, w) -> {
+                android.content.ClipboardManager cm =
+                        (android.content.ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                cm.setPrimaryClip(android.content.ClipData.newPlainText("Clave", codigoCopy));
+                Toast.makeText(this, "✅ Clave copiada", Toast.LENGTH_SHORT).show();
+            });
+        }
+
+        recibo.show();
         setBought();
     }
 

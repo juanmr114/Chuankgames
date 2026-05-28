@@ -19,161 +19,420 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="24dp">
+            android:paddingHorizontal="14dp"
+            android:paddingTop="18dp"
+            android:paddingBottom="16dp">
 
             <!-- Título -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Publicar juego"
+                android:text="🏷️ Vender juego"
                 android:textColor="@color/secundario"
                 android:textSize="26sp"
                 android:textStyle="bold"
                 android:fontFamily="@font/orangekid"
-                android:layout_marginBottom="24dp" />
+                android:layout_marginBottom="4dp" />
 
-            <!-- Preview de imagen -->
-            <ImageView
-                android:id="@+id/ivPreviewPortada"
-                android:layout_width="match_parent"
-                android:layout_height="180dp"
-                android:scaleType="centerCrop"
-                android:background="#1E2A38"
-                android:layout_marginBottom="12dp" />
-
-            <!-- URL de imagen -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="URL de la imagen (https://...)"
-                android:layout_marginBottom="8dp"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                app:boxStrokeColor="@color/secundario"
-                app:hintTextColor="@color/secundario">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etUrlImagen"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:inputType="textUri"
-                    android:imeOptions="actionDone" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <!-- Botón previsualizar -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnPrevisualizar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="👁 Previsualizar"
-                android:textColor="@color/principal"
-                android:backgroundTint="@color/secundario"
-                android:layout_marginBottom="20dp"
-                app:cornerRadius="8dp" />
-
-            <!-- Nombre -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Nombre del juego"
-                android:layout_marginBottom="12dp"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                app:boxStrokeColor="@color/secundario"
-                app:hintTextColor="@color/secundario">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etNombreJuego"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:inputType="textCapWords" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <!-- Género -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Género"
-                android:textColor="@color/secundario"
-                android:textSize="13sp"
-                android:layout_marginBottom="4dp" />
+                android:text="El comprador recibirá la clave al pagar"
+                android:textColor="@color/texto_hint"
+                android:textSize="12sp"
+                android:layout_marginBottom="18dp" />
 
-            <Spinner
-                android:id="@+id/spinnerGenero"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:background="@drawable/spinner_bg"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:layout_marginBottom="16dp" />
-
-            <!-- Descripción -->
-            <com.google.android.material.textfield.TextInputLayout
+            <!-- ══════════════════════════════════
+                 SECCIÓN 1 — IDENTIFICACIÓN
+                 ══════════════════════════════════ -->
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Descripción"
                 android:layout_marginBottom="12dp"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                app:boxStrokeColor="@color/secundario"
-                app:hintTextColor="@color/secundario">
+                app:cardCornerRadius="16dp"
+                app:cardBackgroundColor="@color/card_bg"
+                app:cardElevation="4dp">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etDescripcionJuego"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:inputType="textMultiLine"
-                    android:minLines="3"
-                    android:gravity="top" />
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🎮  JUEGO"
+                        android:textColor="@color/texto_hint"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.12"
+                        android:layout_marginBottom="12dp" />
 
-            <!-- Precio -->
-            <com.google.android.material.textfield.TextInputLayout
+                    <!-- Nombre -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Nombre del juego"
+                        android:layout_marginBottom="10dp"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        app:boxStrokeColor="@color/secundario"
+                        app:hintTextColor="@color/secundario">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etNombreJuego"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/white"
+                            android:inputType="textCapWords"
+                            android:imeOptions="actionDone" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <!-- Buscar portada -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnBuscarPortada"
+                        android:layout_width="match_parent"
+                        android:layout_height="46dp"
+                        android:text="🔍  Buscar portada automáticamente"
+                        android:textColor="@color/principal"
+                        android:textSize="13sp"
+                        android:backgroundTint="@color/secundario"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        app:cornerRadius="10dp" />
+
+                    <!-- Preview portada -->
+                    <ImageView
+                        android:id="@+id/ivPreviewPortada"
+                        android:layout_width="match_parent"
+                        android:layout_height="160dp"
+                        android:scaleType="centerCrop"
+                        android:background="#1E2A38"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="6dp" />
+
+                    <!-- Estado búsqueda -->
+                    <TextView
+                        android:id="@+id/tvEstadoBusqueda"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:textColor="@color/texto_hint"
+                        android:textSize="11sp"
+                        android:gravity="center"
+                        android:visibility="gone" />
+
+                    <!-- URL manual -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="O pega aquí la URL de la imagen"
+                        android:layout_marginTop="8dp"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        app:boxStrokeColor="@color/secundario"
+                        app:hintTextColor="@color/texto_hint">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etUrlImagen"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/white"
+                            android:inputType="textUri"
+                            android:imeOptions="actionDone" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnPrevisualizar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="👁 Previsualizar URL"
+                        android:textColor="@color/secundario"
+                        android:textSize="12sp"
+                        android:backgroundTint="@color/card_dark"
+                        app:strokeColor="@color/secundario"
+                        app:strokeWidth="1dp"
+                        app:cornerRadius="8dp" />
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- ══════════════════════════════════
+                 SECCIÓN 2 — PLATAFORMA Y DETALLES
+                 ══════════════════════════════════ -->
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Precio en € (ej: 9.99)"
-                android:layout_marginBottom="24dp"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                app:boxStrokeColor="@color/secundario"
-                app:hintTextColor="@color/secundario"
-                app:prefixText="€ "
-                app:prefixTextColor="@color/secundario">
+                android:layout_marginBottom="12dp"
+                app:cardCornerRadius="16dp"
+                app:cardBackgroundColor="@color/card_bg"
+                app:cardElevation="4dp">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etPrecioJuego"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:inputType="numberDecimal" />
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="📋  DETALLES"
+                        android:textColor="@color/texto_hint"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.12"
+                        android:layout_marginBottom="12dp" />
+
+                    <!-- Plataforma label -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Plataforma"
+                        android:textColor="@color/secundario"
+                        android:textSize="13sp"
+                        android:layout_marginBottom="4dp" />
+
+                    <Spinner
+                        android:id="@+id/spinnerPlataforma"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:background="@drawable/spinner_bg"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="12dp"
+                        android:layout_marginBottom="14dp" />
+
+                    <!-- Género label -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Género"
+                        android:textColor="@color/secundario"
+                        android:textSize="13sp"
+                        android:layout_marginBottom="4dp" />
+
+                    <Spinner
+                        android:id="@+id/spinnerGenero"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:background="@drawable/spinner_bg"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="12dp"
+                        android:layout_marginBottom="14dp" />
+
+                    <!-- Descripción -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Descripción del juego"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        app:boxStrokeColor="@color/secundario"
+                        app:hintTextColor="@color/secundario">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etDescripcionJuego"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/white"
+                            android:inputType="textMultiLine"
+                            android:minLines="3"
+                            android:gravity="top" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- ══════════════════════════════════
+                 SECCIÓN 3 — PRECIO
+                 ══════════════════════════════════ -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                app:cardCornerRadius="16dp"
+                app:cardBackgroundColor="@color/card_bg"
+                app:cardElevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="💶  PRECIO"
+                        android:textColor="@color/texto_hint"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.12"
+                        android:layout_marginBottom="12dp" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Precio de venta"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        app:boxStrokeColor="@color/secundario"
+                        app:hintTextColor="@color/secundario"
+                        app:prefixText="€ "
+                        app:prefixTextColor="@color/secundario">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etPrecioJuego"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/white"
+                            android:inputType="numberDecimal" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="El comprador también recibirá CK de bonus · Tú también"
+                        android:textColor="@color/texto_hint"
+                        android:textSize="11sp" />
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- ══════════════════════════════════
+                 SECCIÓN 4 — CLAVE DE ACTIVACIÓN
+                 ══════════════════════════════════ -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="18dp"
+                app:cardCornerRadius="16dp"
+                app:cardBackgroundColor="#1A2A1A"
+                app:cardElevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <!-- Header con escudo -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="12dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="🔑"
+                            android:textSize="20sp"
+                            android:layout_marginEnd="8dp" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="CLAVE DE ACTIVACIÓN"
+                                android:textColor="@color/verde_bonus"
+                                android:textSize="10sp"
+                                android:textStyle="bold"
+                                android:letterSpacing="0.12" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Solo visible para el comprador tras pagar"
+                                android:textColor="@color/texto_hint"
+                                android:textSize="10sp"
+                                android:layout_marginTop="1dp" />
+
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- Campo clave -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilCodigo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Clave del juego (ej: XXXXX-XXXXX-XXXXX)"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        app:boxStrokeColor="@color/verde_bonus"
+                        app:hintTextColor="@color/verde_bonus"
+                        app:endIconMode="password_toggle"
+                        app:endIconTint="@color/verde_bonus"
+                        app:counterEnabled="true"
+                        app:counterMaxLength="50">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etCodigoJuego"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/white"
+                            android:fontFamily="monospace"
+                            android:inputType="textPassword"
+                            android:imeOptions="actionDone"
+                            android:maxLength="50" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <!-- Aviso -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:background="@drawable/bg_chip_genero"
+                        android:padding="10dp"
+                        android:layout_marginTop="10dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="🛡️"
+                            android:textSize="14sp"
+                            android:layout_marginEnd="8dp" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="La clave queda cifrada en la base de datos y solo se entrega al comprador cuando el pago se confirma."
+                            android:textColor="@color/texto_hint"
+                            android:textSize="10sp" />
+                    </LinearLayout>
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
             <!-- Botón publicar -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnPublicarJuego"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Publicar juego"
+                android:layout_height="54dp"
+                android:text="🚀  Publicar y poner en venta"
                 android:textColor="@color/principal"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:backgroundTint="@color/secundario"
-                android:paddingVertical="14dp"
-                app:cornerRadius="12dp" />
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                app:cornerRadius="14dp" />
 
             <ProgressBar
                 android:id="@+id/progressPublicar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="12dp"
                 android:visibility="gone" />
 
         </LinearLayout>
-
     </androidx.core.widget.NestedScrollView>
 
     <View

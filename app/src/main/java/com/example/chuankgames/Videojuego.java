@@ -12,6 +12,8 @@ public class Videojuego {
     private long   fechaPublicacion;
     private boolean disponible;
     private String pagoPreferido;   // "euro" o "ck" (preferencia del vendedor)
+    private String plataforma;      // Steam, Epic, GOG, etc.
+    private String codigoJuego;     // clave de activación (solo visible tras comprar)
 
     public Videojuego() {}
 
@@ -45,6 +47,10 @@ public class Videojuego {
     public void    setDisponible(boolean d)            { this.disponible = d; }
     public String  getPagoPreferido()                  { return pagoPreferido != null ? pagoPreferido : "euro"; }
     public void    setPagoPreferido(String p)          { this.pagoPreferido = p; }
+    public String  getPlataforma()                     { return plataforma != null ? plataforma : ""; }
+    public void    setPlataforma(String p)             { this.plataforma = p; }
+    public String  getCodigoJuego()                    { return codigoJuego != null ? codigoJuego : ""; }
+    public void    setCodigoJuego(String c)            { this.codigoJuego = c; }
 
     /** Precio en euros (10 CK = 1 €) */
     public double getPrecioEuros() { return precio / 10.0; }

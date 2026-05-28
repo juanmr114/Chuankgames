@@ -299,22 +299,25 @@ public class BibliotecaActivity extends AppCompatActivity {
     }
 
     private void mostrarDialogoCodigo(String nombre, String codigo) {
-        new AlertDialog.Builder(this)
-                .setTitle("🔑 Código de activación")
-                .setMessage("🎮 " + nombre + "\n\n" +
-                        "Tu código de activación:\n\n" +
-                        "  " + codigo + "\n\n" +
-                        "Guarda este código en un lugar seguro.\n" +
-                        "Es único para este juego en tu cuenta.")
-                .setPositiveButton("📋 Copiar", (d, w) -> {
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("🔑 Clave de activación")
+                .setMessage(
+                        "🎮 " + nombre + "\n\n" +
+                        "━━━━━━━━━━━━━━━━━━━━━━━━\n" +
+                        "  " + codigo + "\n" +
+                        "━━━━━━━━━━━━━━━━━━━━━━━━\n\n" +
+                        "Canjéala en la plataforma correspondiente.\n" +
+                        "No la compartas con nadie.")
+                .setPositiveButton("📋 Copiar clave", (d, w) -> {
                     android.content.ClipboardManager cm =
                             (android.content.ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
                     cm.setPrimaryClip(
-                            android.content.ClipData.newPlainText("Código", codigo));
-                    Toast.makeText(this, "✅ Código copiado", Toast.LENGTH_SHORT).show();
+                            android.content.ClipData.newPlainText("Clave", codigo));
+                    Toast.makeText(this, "✅ Clave copiada al portapapeles", Toast.LENGTH_SHORT).show();
                 })
                 .setNegativeButton("Cerrar", null)
-                .show();
+                .create();
+        dialog.show();
     }
 
     private double safeD(DataSnapshot ds) {

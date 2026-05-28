@@ -159,7 +159,7 @@ public class RegisterActivity extends AppCompatActivity {
         datos.put("email", usuario.getEmail());
         datos.put("fechaRegistro", System.currentTimeMillis());
         datos.put("saldo", 0.0);
-        datos.put("dinero", 50.0);   // 50€ de bienvenida (simulado)
+        datos.put("dinero", 0.0);
 
         dbRef.child(usuario.getUid()).setValue(datos).addOnSuccessListener(unused -> {
             com.google.firebase.auth.UserProfileChangeRequest profile =

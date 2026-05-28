@@ -233,9 +233,29 @@ public class PaginaPrincipalActivity extends AppCompatActivity
 
         FirebaseUser usuario = FirebaseAuth.getInstance().getCurrentUser();
         if (usuario != null) {
-            String nombre = usuario.getDisplayName();
-            tvNombre.setText(nombre != null && !nombre.isEmpty() ? nombre : "Usuario");
+            // Email siempre disponible en Auth
             tvEmail.setText(usuario.getEmail() != null ? usuario.getEmail() : "");
+
+            // Nombre: primero intentamos Auth displayName; si no está, leemos Firebase DB
+            String authName = usuario.getDisplayName();
+            if (authName != null && !authName.isEmpty()) {
+                tvNombre.setText(authName);
+            } else {
+                tvNombre.setText("Cargando...");
+                dbUsuarios.child(uid).child("nombre")
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                String nombre = snapshot.exists()
+                                        ? snapshot.getValue(String.class) : null;
+                                tvNombre.setText(nombre != null && !nombre.isEmpty()
+                                        ? nombre : "Usuario");
+                            }
+                            @Override public void onCancelled(@NonNull DatabaseError e) {
+                                tvNombre.setText("Usuario");
+                            }
+                        });
+            }
         }
     }
 
